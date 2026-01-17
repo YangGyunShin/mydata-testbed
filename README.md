@@ -11,6 +11,7 @@
 
 - [프로젝트 개요](#프로젝트-개요)
 - [기술 스택](#기술-스택)
+- [아키텍처 & 코딩 컨벤션](#아키텍처--코딩-컨벤션)
 - [시스템 아키텍처](#시스템-아키텍처)
 - [프로젝트 구조](#프로젝트-구조)
 - [메뉴 구조](#메뉴-구조)
@@ -70,6 +71,29 @@
 
 ---
 
+## 아키텍처 & 코딩 컨벤션
+
+### 클린 아키텍처 원칙
+
+| 규칙 | 설명 |
+|------|------|
+| **No Factory Method** | DTO, Entity, VO에 `of()`, `from()` 등 정적 팩토리 메서드 사용 금지 |
+| **No Setter** | 모든 클래스에서 Setter 사용 금지, `@Builder` 패턴 사용 |
+| **Use Mapper** | DTO ↔ Entity 변환은 별도 Mapper 클래스 사용 |
+| **Use VO** | 핵심 값 객체(Email, Password, Phone)는 VO로 래핑하여 타입 안전성 확보 |
+
+### 파일 네이밍 규칙
+
+| 타입 | 접미사 | 예시 |
+|------|--------|------|
+| Entity | 도메인명만 | `Member.java` |
+| VO | `Vo` | `EmailVo.java` |
+| DTO (Request) | `RequestDto` | `MemberSignupRequestDto.java` |
+| DTO (Response) | `ResponseDto` | `MemberResponseDto.java` |
+| Mapper | `Mapper` | `MemberMapper.java` |
+
+---
+
 ## 시스템 아키텍처
 
 ```
@@ -82,113 +106,95 @@
 │                      Spring Boot Application                     │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │                    Presentation Layer                      │  │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐   │  │
-│  │  │ Controller  │  │  Thymeleaf  │  │ Static Resources│   │  │
-│  │  │   (REST)    │  │  Templates  │  │  (CSS/JS/IMG)   │   │  │
-│  │  └─────────────┘  └─────────────┘  └─────────────────┘   │  │
+│  │         Controller, DTO, Mapper, Thymeleaf Templates       │  │
 │  └───────────────────────────────────────────────────────────┘  │
 │                              │                                   │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │                     Security Layer                         │  │
-│  │  ┌─────────────────┐  ┌─────────────────────────────┐    │  │
-│  │  │ Spring Security │  │ CustomUserDetailsService    │    │  │
-│  │  │ (Authentication)│  │ (Authorization)             │    │  │
-│  │  └─────────────────┘  └─────────────────────────────┘    │  │
+│  │            Spring Security, UserDetails, Handler           │  │
 │  └───────────────────────────────────────────────────────────┘  │
 │                              │                                   │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │                     Business Layer                         │  │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │  │
-│  │  │MemberService │  │NoticeService │  │ EmailService │    │  │
-│  │  ├──────────────┤  ├──────────────┤  ├──────────────┤    │  │
-│  │  │  FaqService  │  │InquiryService│  │ BoardService │    │  │
-│  │  └──────────────┘  └──────────────┘  └──────────────┘    │  │
+│  │                    Service Classes                         │  │
 │  └───────────────────────────────────────────────────────────┘  │
 │                              │                                   │
 │  ┌───────────────────────────────────────────────────────────┐  │
-│  │                   Data Access Layer                        │  │
-│  │  ┌────────────────────────────────────────────────────┐   │  │
-│  │  │              Spring Data JPA Repositories           │   │  │
-│  │  │  MemberRepository | NoticeRepository | FaqRepository│   │  │
-│  │  └────────────────────────────────────────────────────┘   │  │
+│  │                      Domain Layer                          │  │
+│  │                  Entity, VO, Repository                    │  │
 │  └───────────────────────────────────────────────────────────┘  │
 └─────────────────────────────┬───────────────────────────────────┘
                               │ JDBC
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Database (H2 / MySQL)                         │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │
-│  │ members │ │ notices │ │  faqs   │ │inquiries│ │ boards  │   │
-│  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
-
-### 레이어별 책임
-
-| Layer | 책임 | 주요 컴포넌트 |
-|-------|------|--------------|
-| **Presentation** | HTTP 요청/응답 처리, 뷰 렌더링 | Controller, Thymeleaf |
-| **Security** | 인증/인가, 세션 관리 | Spring Security, UserDetails |
-| **Business** | 비즈니스 로직 처리 | Service 클래스들 |
-| **Data Access** | 데이터 영속성 관리 | JPA Repository |
 
 ---
 
 ## 프로젝트 구조
 
 ```
-src/
-├── main/
-│   ├── java/com/mydata/testbed/
-│   │   ├── MydataTestbedApplication.java    # 메인 클래스
-│   │   │
-│   │   ├── config/                          # 설정
-│   │   │   ├── SecurityConfig.java          # Spring Security 설정
-│   │   │   ├── WebConfig.java               # Web MVC 설정
-│   │   │   └── AuditConfig.java             # JPA Auditing 설정
-│   │   │
-│   │   ├── controller/                      # 컨트롤러
-│   │   │   ├── MainController.java          # 메인 페이지
-│   │   │   ├── IntroController.java         # 소개 페이지
-│   │   │   ├── ApiGuideController.java      # API 가이드
-│   │   │   ├── TestbedController.java       # 테스트베드
-│   │   │   ├── ConformanceController.java   # 적합성 심사
-│   │   │   ├── SupportController.java       # 고객지원
-│   │   │   └── MemberController.java        # 회원 관리
-│   │   │
-│   │   ├── domain/                          # 엔티티
-│   │   │   ├── BaseTimeEntity.java          # 공통 시간 필드
-│   │   │   ├── Member.java                  # 회원
-│   │   │   ├── Notice.java                  # 공지사항
-│   │   │   ├── Faq.java                     # FAQ
-│   │   │   ├── Inquiry.java                 # 문의
-│   │   │   ├── Resource.java                # 자료실
-│   │   │   └── Board.java                   # 자유게시판
-│   │   │
-│   │   ├── repository/                      # 리포지토리
-│   │   ├── service/                         # 서비스
-│   │   ├── dto/                             # DTO
-│   │   ├── security/                        # 보안 관련
-│   │   └── exception/                       # 예외 처리
-│   │
-│   └── resources/
-│       ├── application.yml                  # 설정 파일
-│       ├── templates/                       # Thymeleaf 템플릿
-│       │   ├── layout/                      # 레이아웃 (header, footer, sidebar)
-│       │   ├── fragments/                   # 공통 조각 (breadcrumb, pagination)
-│       │   ├── main/                        # 메인 페이지
-│       │   ├── intro/                       # 소개 페이지
-│       │   ├── api-guide/                   # API 가이드
-│       │   ├── support/                     # 고객지원
-│       │   ├── member/                      # 회원 (로그인, 회원가입)
-│       │   └── error/                       # 에러 페이지
-│       │
-│       └── static/                          # 정적 리소스
-│           ├── css/
-│           ├── js/
-│           └── images/
+src/main/java/com/mydata/mydatatestbed/
+├── MydataTestbedApplication.java
 │
-└── test/                                    # 테스트 코드
+├── config/                          # 설정
+│   ├── SecurityConfig.java
+│   ├── WebConfig.java
+│   └── AuditConfig.java
+│
+├── controller/                      # 컨트롤러
+│   ├── MainController.java
+│   ├── IntroController.java
+│   ├── ApiGuideController.java
+│   ├── TestbedController.java
+│   ├── ConformanceController.java
+│   ├── SupportController.java
+│   └── MemberController.java
+│
+├── domain/                          # 도메인
+│   ├── BaseTimeEntity.java
+│   ├── Member.java
+│   ├── Notice.java
+│   ├── Faq.java
+│   ├── Inquiry.java
+│   ├── Resource.java
+│   ├── Board.java
+│   ├── vo/                          # Value Objects
+│   │   ├── EmailVo.java
+│   │   ├── PasswordVo.java
+│   │   └── PhoneVo.java
+│   └── enums/
+│       ├── MemberRole.java
+│       ├── FaqCategory.java
+│       └── InquiryStatus.java
+│
+├── repository/                      # 리포지토리
+│
+├── dto/                             # DTO
+│   ├── member/
+│   ├── notice/
+│   ├── faq/
+│   ├── inquiry/
+│   ├── board/
+│   └── common/
+│
+├── mapper/                          # Mapper
+│   ├── MemberMapper.java
+│   ├── NoticeMapper.java
+│   └── ...
+│
+├── service/                         # 서비스
+│
+├── security/                        # 보안
+│   ├── CustomUserDetails.java
+│   ├── CustomUserDetailsService.java
+│   └── LoginFailureHandler.java
+│
+└── exception/                       # 예외
+    ├── GlobalExceptionHandler.java
+    └── ...
 ```
 
 ---
@@ -346,11 +352,13 @@ Password: (비워두기)
 
 ### Phase 1: 기본 구조 (1-2주)
 - [x] 프로젝트 생성 및 의존성 설정
-- [ ] 공통 레이아웃 (Header, Footer, Sidebar)
-- [ ] 메인 페이지 UI
+- [x] 공통 레이아웃 (Header, Footer, Sidebar)
+- [x] 메인 페이지 UI
+- [ ] Config 설정 (Security, Web)
 - [ ] 정적 페이지 (소개 페이지들)
 
 ### Phase 2: 회원 기능 (1-2주)
+- [ ] VO (EmailVo, PasswordVo, PhoneVo)
 - [ ] Member Entity 및 Repository
 - [ ] Spring Security 설정
 - [ ] 로그인/로그아웃
