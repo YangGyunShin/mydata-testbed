@@ -1,0 +1,144 @@
+/* ===========================
+   footer.css - 푸터 스타일
+   =========================== */
+
+.footer {
+    background-color: #1e2a3a;
+    color: #adb5bd;
+    margin-top: auto;
+}
+
+.footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Footer Top */
+.footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-logo .logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.footer-links {
+    display: flex;
+    gap: 24px;
+}
+
+.footer-links a {
+    font-size: 0.9375rem;
+    color: #adb5bd;
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+.footer-links a.privacy {
+    font-weight: 600;
+    color: #fff;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 30px 0;
+    gap: 40px;
+}
+
+.footer-info {
+    flex: 1;
+}
+
+.footer-info address {
+    font-style: normal;
+    font-size: 0.875rem;
+    line-height: 1.8;
+    color: #868e96;
+    margin-bottom: 12px;
+}
+
+.footer-info .copyright {
+    font-size: 0.8125rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Footer Family Site */
+.footer-family select {
+    min-width: 200px;
+    padding: 10px 40px 10px 14px;
+    font-size: 0.875rem;
+    color: #adb5bd;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.footer-family select:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.footer-family select:focus {
+    outline: none;
+    border-color: #0d6efd;
+}
+
+.footer-family select option {
+    background-color: #1e2a3a;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-top {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 24px;
+    }
+
+    .footer-info address {
+        font-size: 0.8125rem;
+    }
+
+    .footer-family {
+        width: 100%;
+    }
+
+    .footer-family select {
+        width: 100%;
+        max-width: 300px;
+    }
+}

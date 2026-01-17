@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="pagination(page, url)">
+<nav class="pagination" th:if="${page.totalPages > 0}">
+    <a th:href="@{${url}(page=0)}" 
+       th:class="${page.first} ? 'disabled' : ''"
+       class="page-link first">&laquo;</a>
+    <a th:href="@{${url}(page=${page.number - 1})}" 
+       th:class="${page.first} ? 'disabled' : ''"
+       class="page-link prev">&lt;</a>
+    
+    <th:block th:with="start=${page.number - 2 < 0 ? 0 : page.number - 2},
+                       end=${page.number + 2 >= page.totalPages ? page.totalPages - 1 : page.number + 2}">
+        <a th:each="i : ${#numbers.sequence(start, end)}"
+           th:href="@{${url}(page=${i})}"
+           th:text="${i + 1}"
+           th:classappend="${i == page.number} ? 'active' : ''"
+           class="page-link number">1</a>
+    </th:block>
+    
+    <a th:href="@{${url}(page=${page.number + 1})}" 
+       th:class="${page.last} ? 'disabled' : ''"
+       class="page-link next">&gt;</a>
+    <a th:href="@{${url}(page=${page.totalPages - 1})}" 
+       th:class="${page.last} ? 'disabled' : ''"
+       class="page-link last">&raquo;</a>
+</nav>
+</th:block>
+</html>

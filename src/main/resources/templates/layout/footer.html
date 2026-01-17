@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="footer">
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-logo">
+                <span class="logo-text">금융보안원</span>
+            </div>
+            <ul class="footer-links">
+                <li><a href="#">회사소개</a></li>
+                <li><a href="#" class="privacy">개인정보처리방침</a></li>
+                <li><a href="#">이용약관</a></li>
+                <li><a href="#">오시는길</a></li>
+            </ul>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-info">
+                <address>
+                    (07325) 서울특별시 영등포구 의사당대로 143 금융투자협회빌딩 5층<br>
+                    TEL: 02-6713-3114 | FAX: 02-6713-3119 | E-mail: mydata@fsec.or.kr
+                </address>
+                <p class="copyright">© Financial Security Institute. All rights reserved.</p>
+            </div>
+            <div class="footer-family">
+                <select onchange="if(this.value) window.open(this.value);">
+                    <option value="">관련 사이트 바로가기</option>
+                    <option value="https://www.fsec.or.kr">금융보안원</option>
+                    <option value="https://www.fss.or.kr">금융감독원</option>
+                    <option value="https://www.fsc.go.kr">금융위원회</option>
+                    <option value="https://www.mydatacenter.or.kr">마이데이터지원센터</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</footer>
+</th:block>
+</html>

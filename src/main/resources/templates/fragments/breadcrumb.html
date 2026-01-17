@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="breadcrumb(items)">
+<nav class="breadcrumb">
+    <ol>
+        <li><a th:href="@{/}"><span class="home-icon">🏠</span></a></li>
+        <li th:each="item, stat : ${items}">
+            <span class="separator">›</span>
+            <span th:if="${stat.last}" class="current" th:text="${item.name}">현재 페이지</span>
+            <a th:unless="${stat.last}" th:href="${item.url}" th:text="${item.name}">상위 메뉴</a>
+        </li>
+    </ol>
+</nav>
+</th:block>
+</html>

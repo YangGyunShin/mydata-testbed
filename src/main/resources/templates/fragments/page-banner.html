@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="page-banner(title, subtitle)">
+<section class="page-banner">
+    <div class="page-banner-inner">
+        <h1 class="page-title" th:text="${title}">페이지 타이틀</h1>
+        <p class="page-subtitle" th:if="${subtitle}" th:text="${subtitle}">서브 타이틀</p>
+    </div>
+</section>
+</th:block>
+</html>

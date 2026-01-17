@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<th:block th:fragment="header">
+<header class="header">
+    <div class="header-inner">
+        <!-- 로고 -->
+        <div class="logo">
+            <a th:href="@{/}">
+                <span class="logo-text">마이데이터 테스트베드</span>
+            </a>
+        </div>
+
+        <!-- 네비게이션 -->
+        <nav class="gnb">
+            <ul class="gnb-list">
+                <li class="gnb-item">
+                    <a href="#" class="gnb-link">테스트베드 소개</a>
+                    <ul class="gnb-sub">
+                        <li><a th:href="@{/intro/service}">마이데이터 서비스 소개</a></li>
+                        <li><a th:href="@{/intro/testbed}">마이데이터 테스트베드 소개</a></li>
+                    </ul>
+                </li>
+                <li class="gnb-item">
+                    <a href="#" class="gnb-link">API 가이드</a>
+                    <ul class="gnb-sub">
+                        <li><a th:href="@{/api-guide}">API 가이드</a></li>
+                        <li><a th:href="@{/api-guide/auth-api}">마이데이터 인증 API 규격</a></li>
+                        <li><a th:href="@{/api-guide/support-api}">마이데이터 지원 API 규격</a></li>
+                        <li><a th:href="@{/api-guide/info-api}">마이데이터 정보제공 API 규격</a></li>
+                    </ul>
+                </li>
+                <li class="gnb-item">
+                    <a href="#" class="gnb-link">테스트베드</a>
+                    <ul class="gnb-sub">
+                        <li><a th:href="@{/testbed/service}">마이데이터 서비스 테스트</a></li>
+                        <li><a th:href="@{/testbed/api}">API 서버 테스트</a></li>
+                    </ul>
+                </li>
+                <li class="gnb-item">
+                    <a href="#" class="gnb-link">적합성 심사</a>
+                    <ul class="gnb-sub">
+                        <li><a th:href="@{/conformance/functional}">기능적합성 심사</a></li>
+                        <li><a th:href="@{/conformance/security}">보안취약점 결과 점검</a></li>
+                    </ul>
+                </li>
+                <li class="gnb-item">
+                    <a href="#" class="gnb-link">고객지원</a>
+                    <ul class="gnb-sub">
+                        <li><a th:href="@{/support/notice}">공지사항</a></li>
+                        <li><a th:href="@{/support/faq}">FAQ</a></li>
+                        <li><a th:href="@{/support/inquiry}">문의하기</a></li>
+                        <li><a th:href="@{/support/resource}">자료실</a></li>
+                        <li><a th:href="@{/support/board}">자유게시판</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 회원 메뉴 -->
+        <div class="util-menu">
+            <ul sec:authorize="!isAuthenticated()">
+                <li><a th:href="@{/member/signup/step1}" class="btn-signup">회원가입</a></li>
+                <li><a th:href="@{/member/login}" class="btn-login">로그인</a></li>
+            </ul>
+            <ul sec:authorize="isAuthenticated()">
+                <li class="user-name"><span sec:authentication="name"></span>님</li>
+                <li>
+                    <form th:action="@{/member/logout}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-logout">로그아웃</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 모바일 메뉴 버튼 -->
+        <button class="mobile-menu-btn" type="button" aria-label="메뉴">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+</th:block>
+</html>

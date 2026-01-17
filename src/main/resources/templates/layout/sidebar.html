@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="sidebar(menuTitle, menuItems, currentMenu)">
+<aside class="sidebar">
+    <h2 class="sidebar-title" th:text="${menuTitle}">메뉴 타이틀</h2>
+    <ul class="sidebar-menu">
+        <li th:each="item : ${menuItems}" 
+            th:class="${item.url == currentMenu} ? 'active' : ''">
+            <a th:href="${item.url}" th:text="${item.name}">메뉴명</a>
+        </li>
+    </ul>
+</aside>
+</th:block>
+</html>

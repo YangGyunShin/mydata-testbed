@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - 마이데이터 테스트베드">마이데이터 테스트베드</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <th:block layout:fragment="css"></th:block>
+</head>
+<body>
+    <!-- Header -->
+    <th:block th:replace="~{layout/header :: header}"></th:block>
+
+    <!-- Main Content -->
+    <main layout:fragment="content"></main>
+
+    <!-- Footer -->
+    <th:block th:replace="~{layout/footer :: footer}"></th:block>
+
+    <script th:src="@{/js/common.js}"></script>
+    <th:block layout:fragment="script"></th:block>
+</body>
+</html>

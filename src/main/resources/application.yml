@@ -2,21 +2,21 @@ spring:
   application:
     name: mydata-testbed
 
-  # Thymeleaf ??
+  # Thymeleaf 설정
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
     cache: false
     encoding: UTF-8
 
-  # ?????? ?? (H2)
+  # 데이터베이스 설정 (H2)
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
 
-  # JPA ??
+  # JPA 설정
   jpa:
     hibernate:
       ddl-auto: create
@@ -26,13 +26,13 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
 
-  # H2 ??
+  # H2 콘솔
   h2:
     console:
       enabled: true
       path: /h2-console
 
-  # ?? ??
+  # 메일 설정
   mail:
     host: smtp.gmail.com
     port: 587
@@ -45,7 +45,7 @@ spring:
           starttls:
             enable: true
 
-# ?? ??
+# 서버 설정
 server:
   port: 8080
   servlet:
@@ -53,12 +53,12 @@ server:
       charset: UTF-8
       force: true
 
-# ?? ??? ??
+# 파일 업로드 설정
 file:
   upload-dir: ./uploads
   max-size: 10MB
 
-# ?? ??
+# 로깅 설정
 logging:
   level:
     root: INFO

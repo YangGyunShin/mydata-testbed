@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>메인</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/main.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-inner">
+            <h1>금융분야 마이데이터 테스트베드</h1>
+            <p>마이데이터 서비스 개발을 위한 API 테스트 환경을 제공합니다.<br>
+               안전하고 편리한 마이데이터 서비스를 개발해 보세요.</p>
+            <a th:href="@{/testbed/service}" class="hero-btn">
+                테스트 시작하기 →
+            </a>
+        </div>
+    </section>
+
+    <!-- Quick Menu Section -->
+    <section class="quick-menu-section">
+        <div class="quick-menu-inner">
+            <div class="quick-menu-grid">
+                <a th:href="@{/api-guide}" class="quick-menu-item">
+                    <div class="quick-menu-icon">📚</div>
+                    <h3>API 가이드</h3>
+                    <p>마이데이터 표준 API 규격 및 기술 문서를 확인하세요.</p>
+                    <span class="btn-link">바로가기</span>
+                </a>
+                <a th:href="@{/testbed/service}" class="quick-menu-item">
+                    <div class="quick-menu-icon">🧪</div>
+                    <h3>서비스 테스트</h3>
+                    <p>마이데이터 서비스를 직접 테스트해 보세요.</p>
+                    <span class="btn-link">바로가기</span>
+                </a>
+                <a th:href="@{/testbed/api}" class="quick-menu-item">
+                    <div class="quick-menu-icon">🔌</div>
+                    <h3>API 서버 테스트</h3>
+                    <p>API 서버 연동 상태를 점검하세요.</p>
+                    <span class="btn-link">바로가기</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notice Section -->
+    <section class="notice-section">
+        <div class="notice-inner">
+            <div class="section-header">
+                <h2>📢 공지사항</h2>
+                <a th:href="@{/support/notice}" class="more-link">더보기 +</a>
+            </div>
+            <ul class="notice-list">
+                <li th:each="notice : ${notices}" th:if="${notices != null}">
+                    <span class="badge badge-important" th:if="${notice.pinned}">중요</span>
+                    <a th:href="@{/support/notice/{id}(id=${notice.id})}" class="title" th:text="${notice.title}">공지사항 제목</a>
+                    <span class="date" th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd')}">2025.01.17</span>
+                </li>
+                <!-- 데이터가 없을 때 기본 표시 -->
+                <li th:if="${notices == null or #lists.isEmpty(notices)}">
+                    <span class="title">등록된 공지사항이 없습니다.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Support Section -->
+    <section class="support-section">
+        <div class="support-inner">
+            <div class="section-header">
+                <h2>💬 고객지원</h2>
+            </div>
+            <div class="support-grid">
+                <a th:href="@{/support/faq}" class="support-item">
+                    <div class="support-icon">❓</div>
+                    <h3>FAQ</h3>
+                    <p>자주 묻는 질문을 확인하세요</p>
+                </a>
+                <a th:href="@{/support/inquiry}" class="support-item">
+                    <div class="support-icon">✉️</div>
+                    <h3>문의하기</h3>
+                    <p>1:1 문의를 남겨주세요</p>
+                </a>
+                <a th:href="@{/support/resource}" class="support-item">
+                    <div class="support-icon">📁</div>
+                    <h3>자료실</h3>
+                    <p>관련 자료를 다운로드하세요</p>
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/js/main.js}"></script>
+</th:block>
+</body>
+</html>
