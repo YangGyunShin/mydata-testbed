@@ -9,6 +9,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.regex.Pattern;
 
+/**
+ * 이메일 Value Object
+ *
+ * @Embeddable: 이 클래스를 독립 테이블로 만들지 않고,
+ *              다른 Entity(@Entity)에 내장(embed)시켜 사용하겠다는 의미.
+ *              Member Entity에서 @Embedded로 포함하면,
+ *              EmailVo의 value 필드가 members 테이블의 email 컬럼으로 저장됨.
+ */
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

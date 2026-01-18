@@ -7,6 +7,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 비밀번호 Value Object
+ *
+ * @Embeddable: 독립 테이블 없이 Member Entity에 내장됨.
+ *              members 테이블의 password 컬럼으로 저장됨.
+ */
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
