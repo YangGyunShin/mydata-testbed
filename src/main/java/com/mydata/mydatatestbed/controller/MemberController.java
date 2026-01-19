@@ -4,7 +4,6 @@ import com.mydata.mydatatestbed.dto.member.MemberSignupRequestDto;
 import com.mydata.mydatatestbed.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.awt.image.renderable.RenderableImage;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 회원 관련 컨트롤러
@@ -59,6 +59,9 @@ public class MemberController {
             model.addAttribute("logoutMessage", "로그아웃되었습니다.");
         }
 
+        // 브레드크럼 데이터 설정
+        model.addAttribute("breadcrumbItems", createBreadcrumb("로그인", "/member/login"));
+
         return "member/login";
     }
 
@@ -68,9 +71,13 @@ public class MemberController {
      * 회원가입 1단계 - 약관동의 페이지
      */
     @GetMapping("/signup/step1")
-    public String signupStep1(HttpSession session) {
+    public String signupStep1(HttpSession session, Model model) {
         // 새 회원가입 시작 시 이전 세션 데이터 초기화
         clearSignupSession(session);
+        
+        // 브레드크럼 데이터 설정
+        model.addAttribute("breadcrumbItems", createSignupBreadcrumb());
+        
         return "member/signup-step1-terms";
     }
 
@@ -103,12 +110,16 @@ public class MemberController {
      * 회원가입 2단계 - 휴대폰 인증 페이지
      */
     @GetMapping("/signup/step2")
-    public String signupStep2(HttpSession session, RedirectAttributes redirectAttributes) {
+    public String signupStep2(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         // 이전 단계 완료 확인
-        if (session.getAttribute("signupStep2Complete") == null) {
+        if (session.getAttribute("signupStep1Complete") == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "약관동의를 먼저 완료해주세요.");
             return "redirect:/member/signup/step1";
         }
+        
+        // 브레드크럼 데이터 설정
+        model.addAttribute("breadcrumbItems", createSignupBreadcrumb());
+        
         return "member/signup-step2-phone";
     }
 
@@ -155,6 +166,9 @@ public class MemberController {
                 .phone(phone)
                 .build();
         model.addAttribute("signupRequest", dto);
+        
+        // 브레드크럼 데이터 설정
+        model.addAttribute("breadcrumbItems", createSignupBreadcrumb());
 
         return "member/signup-step3-info";
     }
@@ -170,6 +184,7 @@ public class MemberController {
             @Valid @ModelAttribute("signupRequest") MemberSignupRequestDto requestDto,
             BindingResult bindingResult,
             HttpSession session,
+            Model model,
             RedirectAttributes redirectAttributes) {
 
         // 이전 단계 완료 확인
@@ -179,12 +194,16 @@ public class MemberController {
 
         // 검증 실패 시 다시 입력 폼으로
         if (bindingResult.hasErrors()) {
+            // 브레드크럼 데이터 설정 (검증 실패 시에도 필요)
+            model.addAttribute("breadcrumbItems", createSignupBreadcrumb());
             return "member/signup-step3-info";
         }
 
         // 이메일 중복 확인
         if (memberService.isEmailDuplicate(requestDto.getEmail())) {
             bindingResult.rejectValue("email", "duplicate", "이미 사용 중인 이메일입니다.");
+            // 브레드크럼 데이터 설정 (검증 실패 시에도 필요)
+            model.addAttribute("breadcrumbItems", createSignupBreadcrumb());
             return "member/signup-step3-info";
         }
 
@@ -213,6 +232,9 @@ public class MemberController {
 
         MemberSignupRequestDto requestDto = (MemberSignupRequestDto) session.getAttribute("signupRequest");
         model.addAttribute("email", requestDto.getEmail());
+        
+        // 브레드크럼 데이터 설정
+        model.addAttribute("breadcrumbItems", createSignupBreadcrumb());
 
         return "member/signup-step4-email";
     }
@@ -274,5 +296,31 @@ public class MemberController {
         session.removeAttribute("signupStep3Complete");
         session.removeAttribute("signupPhone");
         session.removeAttribute("signupRequest");
+    }
+    
+    /**
+     * 브레드크럼 데이터 생성 (로그인 등 일반 페이지용)
+     * 
+     * @param currentPageName 현재 페이지명
+     * @param currentPageUrl 현재 페이지 URL
+     * @return 브레드크럼 아이템 리스트
+     */
+    private List<Map<String, String>> createBreadcrumb(String currentPageName, String currentPageUrl) {
+        return List.of(
+                Map.of("name", "회원", "url", "#"),
+                Map.of("name", currentPageName, "url", currentPageUrl)
+        );
+    }
+    
+    /**
+     * 회원가입 페이지용 브레드크럼 데이터 생성
+     * 
+     * @return 브레드크럼 아이템 리스트
+     */
+    private List<Map<String, String>> createSignupBreadcrumb() {
+        return List.of(
+                Map.of("name", "회원", "url", "#"),
+                Map.of("name", "회원가입", "url", "/member/signup/step1")
+        );
     }
 }

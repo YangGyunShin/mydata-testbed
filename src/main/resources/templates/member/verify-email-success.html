@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>이메일 인증 완료</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/form.css}">
+        <style>
+            .verify-result {
+                text-align: center;
+                padding: 60px 20px;
+            }
+            .verify-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 100px;
+                height: 100px;
+                background: linear-gradient(135deg, #d1e7dd 0%, #a3cfbb 100%);
+                border-radius: 50%;
+                font-size: 3rem;
+                margin-bottom: 32px;
+                animation: bounceIn 0.6s ease-out;
+            }
+            @keyframes bounceIn {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.3);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                70% {
+                    transform: scale(0.9);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            .verify-title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: #198754;
+                margin-bottom: 16px;
+            }
+            .verify-message {
+                font-size: 1rem;
+                color: #495057;
+                line-height: 1.8;
+                margin-bottom: 32px;
+            }
+            .verify-email {
+                display: inline-block;
+                padding: 8px 16px;
+                background-color: #e7f1ff;
+                border-radius: 4px;
+                font-weight: 600;
+                color: #0d6efd;
+                margin-bottom: 8px;
+            }
+            .welcome-box {
+                background-color: #f8f9fa;
+                border-radius: 12px;
+                padding: 32px;
+                margin: 32px 0;
+            }
+            .welcome-box h3 {
+                font-size: 1.125rem;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin-bottom: 16px;
+            }
+            .feature-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 16px;
+                justify-content: center;
+            }
+            .feature-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 20px;
+                background-color: #fff;
+                border: 1px solid #e9ecef;
+                border-radius: 8px;
+                font-size: 0.9375rem;
+                color: #495057;
+            }
+            .feature-item .icon {
+                font-size: 1.25rem;
+            }
+            .action-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 16px;
+                margin-top: 32px;
+            }
+            .action-buttons .btn {
+                min-width: 160px;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('이메일 인증', '회원가입이 완료되었습니다.')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbItems})}"></th:block>
+
+    <div class="form-page form-page-wide">
+        <div class="form-container">
+            <div class="verify-result">
+                <!-- 성공 아이콘 -->
+                <div class="verify-icon">✓</div>
+                
+                <!-- 성공 메시지 -->
+                <h2 class="verify-title">이메일 인증이 완료되었습니다!</h2>
+                <p class="verify-message">
+                    <span class="verify-email" th:text="${email}">example@email.com</span><br><br>
+                    회원가입이 성공적으로 완료되었습니다.<br>
+                    이제 마이데이터 테스트베드의 모든 서비스를 이용하실 수 있습니다.
+                </p>
+                
+                <!-- 환영 박스 -->
+                <div class="welcome-box">
+                    <h3>🎉 마이데이터 테스트베드에 오신 것을 환영합니다!</h3>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <span class="icon">📚</span>
+                            <span>API 가이드 열람</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="icon">🧪</span>
+                            <span>서비스 테스트</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="icon">🔌</span>
+                            <span>API 서버 테스트</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="icon">✅</span>
+                            <span>적합성 심사</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 액션 버튼 -->
+                <div class="action-buttons">
+                    <a th:href="@{/member/login}" class="btn btn-primary btn-lg">로그인하기</a>
+                    <a th:href="@{/}" class="btn btn-outline btn-lg">메인으로</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

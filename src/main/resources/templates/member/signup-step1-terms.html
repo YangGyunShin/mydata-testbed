@@ -14,13 +14,8 @@
   <!-- 페이지 배너 -->
   <th:block th:replace="~{fragments/page-banner :: page-banner('회원가입', '마이데이터 테스트베드 회원이 되어보세요.')}"></th:block>
 
-  <!-- 브레드크럼 -->
-  <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${
-        T(java.util.Arrays).asList(
-            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원'); it.put('url', '#'); }),
-            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원가입'); it.put('url', '/member/signup/step1'); })
-        )
-    })}"></th:block>
+  <!-- 브레드크럼 - Controller에서 breadcrumbItems를 전달받아 사용 -->
+  <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbItems})}"></th:block>
 
   <!-- 회원가입 폼 -->
   <div class="form-page form-page-wide">

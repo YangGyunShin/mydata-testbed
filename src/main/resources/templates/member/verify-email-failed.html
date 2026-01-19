@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>이메일 인증 실패</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/form.css}">
+        <style>
+            .verify-result {
+                text-align: center;
+                padding: 60px 20px;
+            }
+            .verify-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 100px;
+                height: 100px;
+                background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
+                border-radius: 50%;
+                font-size: 3rem;
+                margin-bottom: 32px;
+            }
+            .verify-title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: #dc3545;
+                margin-bottom: 16px;
+            }
+            .verify-message {
+                font-size: 1rem;
+                color: #495057;
+                line-height: 1.8;
+                margin-bottom: 32px;
+            }
+            .error-box {
+                background-color: #f8d7da;
+                border: 1px solid #f5c2c7;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 24px auto;
+                max-width: 500px;
+                text-align: left;
+            }
+            .error-box-title {
+                font-weight: 600;
+                color: #842029;
+                margin-bottom: 12px;
+            }
+            .error-box p {
+                color: #842029;
+                margin: 0;
+                line-height: 1.6;
+            }
+            .help-box {
+                background-color: #fff3cd;
+                border: 1px solid #ffecb5;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 24px auto;
+                max-width: 500px;
+                text-align: left;
+            }
+            .help-box-title {
+                font-weight: 600;
+                color: #664d03;
+                margin-bottom: 12px;
+            }
+            .help-box ul {
+                margin: 0;
+                padding-left: 20px;
+                color: #664d03;
+            }
+            .help-box li {
+                margin-bottom: 8px;
+                line-height: 1.6;
+            }
+            .action-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 16px;
+                margin-top: 32px;
+            }
+            .action-buttons .btn {
+                min-width: 160px;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('이메일 인증', '인증에 실패했습니다.')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbItems})}"></th:block>
+
+    <div class="form-page form-page-wide">
+        <div class="form-container">
+            <div class="verify-result">
+                <!-- 실패 아이콘 -->
+                <div class="verify-icon">✕</div>
+                
+                <!-- 실패 메시지 -->
+                <h2 class="verify-title">이메일 인증에 실패했습니다</h2>
+                <p class="verify-message">
+                    인증 링크가 유효하지 않거나 만료되었습니다.<br>
+                    아래 안내를 확인하시고 다시 시도해주세요.
+                </p>
+                
+                <!-- 에러 원인 -->
+                <div class="error-box">
+                    <p class="error-box-title">⚠️ 인증 실패 원인</p>
+                    <p th:text="${errorMessage}">인증 링크가 만료되었거나 이미 사용된 링크입니다.</p>
+                </div>
+                
+                <!-- 도움말 -->
+                <div class="help-box">
+                    <p class="help-box-title">💡 해결 방법</p>
+                    <ul>
+                        <li>인증 링크는 <strong>24시간</strong> 동안만 유효합니다.</li>
+                        <li>이미 인증을 완료한 경우, 바로 로그인하실 수 있습니다.</li>
+                        <li>인증 링크가 만료된 경우, 회원가입을 다시 진행해주세요.</li>
+                        <li>문제가 계속되면 <a th:href="@{/support/inquiry}">문의하기</a>를 이용해주세요.</li>
+                    </ul>
+                </div>
+                
+                <!-- 액션 버튼 -->
+                <div class="action-buttons">
+                    <a th:href="@{/member/signup/step1}" class="btn btn-primary btn-lg">회원가입 다시하기</a>
+                    <a th:href="@{/member/login}" class="btn btn-outline btn-lg">로그인</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

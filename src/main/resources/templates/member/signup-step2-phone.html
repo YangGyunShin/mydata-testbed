@@ -14,13 +14,8 @@
     <!-- 페이지 배너 -->
     <th:block th:replace="~{fragments/page-banner :: page-banner('회원가입', '마이데이터 테스트베드 회원이 되어보세요.')}"></th:block>
 
-    <!-- 브레드크럼 -->
-    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${
-        T(java.util.Arrays).asList(
-            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원'); it.put('url', '#'); }),
-            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원가입'); it.put('url', '/member/signup/step1'); })
-        )
-    })}"></th:block>
+    <!-- 브레드크럼 - Controller에서 breadcrumbItems를 전달받아 사용 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbItems})}"></th:block>
 
     <!-- 회원가입 폼 -->
     <div class="form-page form-page-wide">
@@ -118,9 +113,13 @@
                 }
 
                 // TODO: 실제 인증번호 검증 API 호출
-                // 여기서는 무조건 성공 처리
+                // 테스트 환경에서는 무조건 성공 처리
+                
+                // alert()은 동기적으로 동작 → 사용자가 "확인" 버튼을 누를 때까지 대기
                 alert('인증이 완료되었습니다.');
-                nextBtn.disabled = false;
+                
+                // 사용자가 alert의 "확인"을 누른 후에 폼 제출 → 다음 단계로 이동
+                document.getElementById('phoneAuthForm').submit();
             });
         });
     </script>
