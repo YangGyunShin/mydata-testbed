@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>회원가입 - 이메일 인증</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/form.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('회원가입', '마이데이터 테스트베드 회원이 되어보세요.')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${
+        T(java.util.Arrays).asList(
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원'); it.put('url', '#'); }),
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원가입'); it.put('url', '/member/signup/step1'); })
+        )
+    })}"></th:block>
+
+    <!-- 회원가입 폼 -->
+    <div class="form-page form-page-wide">
+        <div class="form-container">
+            <!-- 단계 표시 -->
+            <div class="step-indicator">
+                <div class="step-indicator-item completed">
+                    <span class="step-number-indicator">✓</span>
+                    <span class="step-indicator-label">약관동의</span>
+                </div>
+                <div class="step-indicator-item completed">
+                    <span class="step-number-indicator">✓</span>
+                    <span class="step-indicator-label">휴대폰 인증</span>
+                </div>
+                <div class="step-indicator-item completed">
+                    <span class="step-number-indicator">✓</span>
+                    <span class="step-indicator-label">회원정보 입력</span>
+                </div>
+                <div class="step-indicator-item active">
+                    <span class="step-number-indicator">4</span>
+                    <span class="step-indicator-label">이메일 인증</span>
+                </div>
+            </div>
+
+            <h2 class="form-title">이메일 인증</h2>
+
+            <!-- 에러 메시지 -->
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <div class="info-box highlight">
+                <p class="info-box-title">📧 인증 메일이 발송되었습니다.</p>
+                <p>
+                    <strong th:text="${email}">example@email.com</strong> 주소로 인증 메일을 발송했습니다.<br>
+                    메일함을 확인하시고, 인증 링크를 클릭하거나 아래 버튼을 눌러 가입을 완료해주세요.
+                </p>
+                <p class="text-muted" style="margin-top: 12px; font-size: 0.875rem;">
+                    * 메일이 도착하지 않으면 스팸 메일함을 확인해주세요.<br>
+                    * 테스트 환경에서는 인증 없이 바로 가입할 수 있습니다.
+                </p>
+            </div>
+
+            <!--
+                실제 서비스에서는:
+                1. 이메일 링크 클릭 시 /member/verify-email?token=xxx로 요청
+                2. 토큰 검증 후 회원가입 완료 처리
+
+                테스트 환경에서는:
+                "인증 완료" 버튼 클릭으로 바로 가입 완료
+            -->
+            <form th:action="@{/member/signup/step4}" method="post">
+                <div class="form-actions">
+                    <a th:href="@{/member/signup/step3}" class="btn btn-secondary">이전</a>
+                    <button type="submit" class="btn btn-primary">인증 완료 (회원가입)</button>
+                </div>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="alert('인증 메일이 재발송되었습니다.')">
+                    인증 메일 재발송
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

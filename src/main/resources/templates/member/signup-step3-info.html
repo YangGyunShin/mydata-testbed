@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>회원가입 - 회원정보 입력</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/form.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('회원가입', '마이데이터 테스트베드 회원이 되어보세요.')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${
+        T(java.util.Arrays).asList(
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원'); it.put('url', '#'); }),
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원가입'); it.put('url', '/member/signup/step1'); })
+        )
+    })}"></th:block>
+
+    <!-- 회원가입 폼 -->
+    <div class="form-page form-page-wide">
+        <div class="form-container">
+            <!-- 단계 표시 -->
+            <div class="step-indicator">
+                <div class="step-indicator-item completed">
+                    <span class="step-number-indicator">✓</span>
+                    <span class="step-indicator-label">약관동의</span>
+                </div>
+                <div class="step-indicator-item completed">
+                    <span class="step-number-indicator">✓</span>
+                    <span class="step-indicator-label">휴대폰 인증</span>
+                </div>
+                <div class="step-indicator-item active">
+                    <span class="step-number-indicator">3</span>
+                    <span class="step-indicator-label">회원정보 입력</span>
+                </div>
+                <div class="step-indicator-item">
+                    <span class="step-number-indicator">4</span>
+                    <span class="step-indicator-label">이메일 인증</span>
+                </div>
+            </div>
+
+            <h2 class="form-title">회원정보 입력</h2>
+
+            <!-- 에러 메시지 -->
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <!--
+                th:object: 폼 데이터를 바인딩할 객체 지정
+                th:field: 객체의 필드와 input을 연결 (name, id, value 자동 설정)
+                th:errors: 해당 필드의 검증 에러 메시지 표시
+                th:errorclass: 에러 시 추가할 CSS 클래스
+            -->
+            <form th:action="@{/member/signup/step3}" method="post" th:object="${signupRequest}">
+                <!-- 이메일 -->
+                <div class="form-group">
+                    <label for="email" class="form-label required">이메일</label>
+                    <input type="email" id="email" th:field="*{email}" class="form-control"
+                           th:errorclass="is-invalid" placeholder="example@email.com">
+                    <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback" th:errors="*{email}"></div>
+                </div>
+
+                <!-- 비밀번호 -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password" class="form-label required">비밀번호</label>
+                        <input type="password" id="password" th:field="*{password}" class="form-control"
+                               th:errorclass="is-invalid" placeholder="8~20자">
+                        <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback" th:errors="*{password}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordConfirm" class="form-label required">비밀번호 확인</label>
+                        <input type="password" id="passwordConfirm" th:field="*{passwordConfirm}" class="form-control"
+                               th:errorclass="is-invalid" placeholder="비밀번호 재입력">
+                        <div th:if="${#fields.hasErrors('passwordConfirm')}" class="invalid-feedback" th:errors="*{passwordConfirm}"></div>
+                    </div>
+                </div>
+
+                <!-- @PasswordMatching 어노테이션 에러 표시 (글로벌 에러) -->
+                <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                    <span th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+                </div>
+
+                <!-- 이름 -->
+                <div class="form-group">
+                    <label for="name" class="form-label required">이름</label>
+                    <input type="text" id="name" th:field="*{name}" class="form-control"
+                           th:errorclass="is-invalid" placeholder="실명 입력">
+                    <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback" th:errors="*{name}"></div>
+                </div>
+
+                <!-- 휴대폰 (이전 단계에서 가져온 값, 읽기 전용) -->
+                <div class="form-group">
+                    <label for="phone" class="form-label">휴대폰 번호</label>
+                    <input type="tel" id="phone" th:field="*{phone}" class="form-control" readonly>
+                </div>
+
+                <!-- 소속 (선택) -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="company" class="form-label">소속 회사/기관</label>
+                        <input type="text" id="company" th:field="*{company}" class="form-control"
+                               th:errorclass="is-invalid" placeholder="선택 입력">
+                        <div th:if="${#fields.hasErrors('company')}" class="invalid-feedback" th:errors="*{company}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="department" class="form-label">부서</label>
+                        <input type="text" id="department" th:field="*{department}" class="form-control"
+                               th:errorclass="is-invalid" placeholder="선택 입력">
+                        <div th:if="${#fields.hasErrors('department')}" class="invalid-feedback" th:errors="*{department}"></div>
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="form-actions">
+                    <a th:href="@{/member/signup/step2}" class="btn btn-secondary">이전</a>
+                    <button type="submit" class="btn btn-primary">다음 단계</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>로그인</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/form.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('로그인', '마이데이터 테스트베드에 오신 것을 환영합니다.')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${
+        T(java.util.Arrays).asList(
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원'); it.put('url', '#'); }),
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '로그인'); it.put('url', '/member/login'); })
+        )
+    })}"></th:block>
+
+    <!-- 로그인 폼 -->
+    <div class="form-page">
+        <div class="form-container">
+            <h2 class="form-title">로그인</h2>
+
+            <!-- 에러 메시지 -->
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <!-- 로그아웃 메시지 -->
+            <div th:if="${logoutMessage}" class="alert alert-success" th:text="${logoutMessage}"></div>
+
+            <!--
+                Spring Security Form Login 폼
+                - action: SecurityConfig에서 설정한 loginProcessingUrl (기본: /login, 우리는 /member/login)
+                - method: POST
+                - name 속성: SecurityConfig의 usernameParameter, passwordParameter와 일치해야 함
+            -->
+            <form th:action="@{/member/login}" method="post" class="login-form">
+                <div class="form-group">
+                    <label for="email" class="form-label required">이메일</label>
+                    <input type="email" id="email" name="email" class="form-control"
+                           placeholder="이메일을 입력하세요" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label required">비밀번호</label>
+                    <input type="password" id="password" name="password" class="form-control"
+                           placeholder="비밀번호를 입력하세요" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-login">로그인</button>
+            </form>
+
+            <div class="login-divider">
+                <span>또는</span>
+            </div>
+
+            <div class="login-links">
+                <a th:href="@{/member/signup/step1}">회원가입</a>
+                <a href="#">아이디 찾기</a>
+                <a href="#">비밀번호 찾기</a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

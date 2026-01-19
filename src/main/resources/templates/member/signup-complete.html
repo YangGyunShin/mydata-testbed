@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>회원가입 완료</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/form.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('회원가입', '마이데이터 테스트베드 회원이 되어보세요.')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${
+        T(java.util.Arrays).asList(
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원'); it.put('url', '#'); }),
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원가입'); it.put('url', '/member/signup/step1'); })
+        )
+    })}"></th:block>
+
+    <!-- 완료 페이지 -->
+    <div class="form-page">
+        <div class="form-container">
+            <div class="complete-page">
+                <div class="complete-icon">🎉</div>
+                <h2 class="complete-title">회원가입이 완료되었습니다!</h2>
+                <p class="complete-message">
+                    마이데이터 테스트베드의 회원이 되신 것을 환영합니다.<br>
+                    로그인 후 다양한 서비스를 이용해보세요.
+                </p>
+                <div class="form-actions" style="border-top: none; padding-top: 0;">
+                    <a th:href="@{/}" class="btn btn-secondary">메인으로</a>
+                    <a th:href="@{/member/login}" class="btn btn-primary">로그인하기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

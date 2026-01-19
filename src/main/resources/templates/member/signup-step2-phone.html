@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>회원가입 - 휴대폰 인증</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/form.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('회원가입', '마이데이터 테스트베드 회원이 되어보세요.')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${
+        T(java.util.Arrays).asList(
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원'); it.put('url', '#'); }),
+            new T(java.util.LinkedHashMap)().tap({ it.put('name', '회원가입'); it.put('url', '/member/signup/step1'); })
+        )
+    })}"></th:block>
+
+    <!-- 회원가입 폼 -->
+    <div class="form-page form-page-wide">
+        <div class="form-container">
+            <!-- 단계 표시 -->
+            <div class="step-indicator">
+                <div class="step-indicator-item completed">
+                    <span class="step-number-indicator">✓</span>
+                    <span class="step-indicator-label">약관동의</span>
+                </div>
+                <div class="step-indicator-item active">
+                    <span class="step-number-indicator">2</span>
+                    <span class="step-indicator-label">휴대폰 인증</span>
+                </div>
+                <div class="step-indicator-item">
+                    <span class="step-number-indicator">3</span>
+                    <span class="step-indicator-label">회원정보 입력</span>
+                </div>
+                <div class="step-indicator-item">
+                    <span class="step-number-indicator">4</span>
+                    <span class="step-indicator-label">이메일 인증</span>
+                </div>
+            </div>
+
+            <h2 class="form-title">휴대폰 인증</h2>
+            <p class="form-description">
+                본인 확인을 위해 휴대폰 인증을 진행합니다.<br>
+                휴대폰 번호를 입력하고 인증번호를 받으세요.
+            </p>
+
+            <!-- 에러 메시지 -->
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <form th:action="@{/member/signup/step2}" method="post" id="phoneAuthForm">
+                <div class="form-group">
+                    <label for="phone" class="form-label required">휴대폰 번호</label>
+                    <div class="input-with-btn">
+                        <input type="tel" id="phone" name="phone" class="form-control"
+                               placeholder="01012345678" pattern="^01[0-9]{8,9}$" required>
+                        <button type="button" class="btn btn-secondary" id="sendAuthBtn">인증번호 발송</button>
+                    </div>
+                </div>
+
+                <div class="form-group" id="authCodeGroup" style="display: none;">
+                    <label for="authCode" class="form-label required">인증번호</label>
+                    <div class="input-with-btn">
+                        <input type="text" id="authCode" class="form-control"
+                               placeholder="인증번호 6자리 입력" maxlength="6">
+                        <button type="button" class="btn btn-secondary" id="verifyBtn">확인</button>
+                    </div>
+                    <small class="text-muted">인증번호가 발송되었습니다. 3분 내에 입력해주세요.</small>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="form-actions">
+                    <a th:href="@{/member/signup/step1}" class="btn btn-secondary">이전</a>
+                    <button type="submit" class="btn btn-primary" id="nextBtn">다음 단계</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sendAuthBtn = document.getElementById('sendAuthBtn');
+            const authCodeGroup = document.getElementById('authCodeGroup');
+            const verifyBtn = document.getElementById('verifyBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const phoneInput = document.getElementById('phone');
+
+            // 인증번호 발송 버튼 클릭
+            sendAuthBtn.addEventListener('click', function() {
+                const phone = phoneInput.value.replace(/-/g, '');
+
+                if (!phone || !/^01[0-9]{8,9}$/.test(phone)) {
+                    alert('올바른 휴대폰 번호를 입력해주세요.');
+                    return;
+                }
+
+                // TODO: 실제 SMS 인증 API 호출
+                // 여기서는 UI만 보여줌
+                authCodeGroup.style.display = 'block';
+                alert('인증번호가 발송되었습니다. (테스트: 아무 숫자나 입력하세요)');
+            });
+
+            // 인증번호 확인 버튼 클릭
+            verifyBtn.addEventListener('click', function() {
+                const authCode = document.getElementById('authCode').value;
+
+                if (!authCode || authCode.length !== 6) {
+                    alert('6자리 인증번호를 입력해주세요.');
+                    return;
+                }
+
+                // TODO: 실제 인증번호 검증 API 호출
+                // 여기서는 무조건 성공 처리
+                alert('인증이 완료되었습니다.');
+                nextBtn.disabled = false;
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>
