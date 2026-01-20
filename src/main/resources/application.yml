@@ -36,14 +36,19 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    username: skshtlsdidrb@gmail.com      # 본인 Gmail 주소
+    password: yqbo jsky ihap zysd      # Gmail 앱 비밀번호 (16자리)
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 
 # 서버 설정
 server:

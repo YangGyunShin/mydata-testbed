@@ -1,6 +1,7 @@
 package com.mydata.mydatatestbed.controller;
 
 import com.mydata.mydatatestbed.dto.member.MemberSignupRequestDto;
+import com.mydata.mydatatestbed.service.EmailService;
 import com.mydata.mydatatestbed.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final EmailService emailService;
 
     // ==================== 로그인 ====================
 
@@ -211,8 +214,18 @@ public class MemberController {
         session.setAttribute("signupRequest", requestDto);
         session.setAttribute("signupStep3Complete", true);
 
-        // TODO: 이메일 인증 메일 발송
-        // emailService.sendVerificationEmail(requestDto.getEmail());
+        // 회원 먼저 생성 (이메일 미인증 상태로)
+        try {
+            memberService.signup(requestDto);
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("email", "duplicate", e.getMessage());
+            model.addAttribute("breadcrumbItems", createSignupBreadcrumb());
+            return "member/signup-step3-info";
+        }
+
+        // 이메일 인증 메일 발송
+        LocalDateTime expiresAt = emailService.sendVerificationEmail(requestDto.getEmail());
+        redirectAttributes.addFlashAttribute("expiresAt", expiresAt);
 
         return "redirect:/member/signup/step4";
     }
@@ -283,6 +296,63 @@ public class MemberController {
     @GetMapping("/signup/complete")
     public String signupComplete() {
         return "member/signup-complete";
+    }
+
+    // ==================== 이메일 인증 처리 ====================
+
+    /**
+     * 이메일 인증 링크 클릭 처리
+     * 사용자가 메일의 인증 링크를 클릭하면 이 엔드포인트로 요청됨
+     */
+    @GetMapping("/verify-email")
+    public String verifyEmail(
+            @RequestParam String token,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            // 토큰 검증
+            String email = emailService.verifyToken(token);
+
+            // 2. 회원 이메일 인증 처리
+            memberService.verifyEmail(email);
+
+            // 브레드크럼 설정
+            model.addAttribute("breadcrumbItems", createBreadcrumb("이메일 인증", "/member/verify-email"));
+            model.addAttribute("email", email);
+
+            return "member/verify-email-success";
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("breadcrumbItems", createBreadcrumb("이메일 인증", "/member/verify-email"));
+            model.addAttribute("errorMessage", e.getMessage());
+            return "member/verify-email-failed";
+        }
+    }
+
+    /**
+     * 인증 메일 재발송
+     */
+    @PostMapping("/signup/resend-email")
+    public String resendVerificationEmail(
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        MemberSignupRequestDto requestDto = (MemberSignupRequestDto) session.getAttribute("signupRequest");
+        if (requestDto == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "세션이 만료되었습니다.");
+            return "redirect:/member/signup/step1";
+        }
+
+        try {
+            LocalDateTime expiresAt = emailService.resendVerificationEmail(requestDto.getEmail());
+            redirectAttributes.addFlashAttribute("successMessage", "인증 메일이 재발송되었습니다.");
+            redirectAttributes.addFlashAttribute("expiresAt", expiresAt);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "메일 발송에 실패했습니다: " + e.getMessage());
+        }
+
+        return "redirect:/member/signup/step4";
     }
 
     // ==================== 유틸리티 메서드 ====================
