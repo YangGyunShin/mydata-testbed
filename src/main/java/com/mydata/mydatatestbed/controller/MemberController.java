@@ -252,41 +252,41 @@ public class MemberController {
         return "member/signup-step4-email";
     }
 
-    /**
-     * 회원가입 4단계 - 이메일 인증 처리 (인증 완료 버튼 클릭 시)
-     * <p>
-     * 참고: 실제 서비스에서는 이메일 링크 클릭으로 인증 처리
-     * 여기서는 단순화하여 버튼 클릭으로 가입 완료 처리
-     */
-    @PostMapping("/signup/step4")
-    public String signupStep4Process(
-            HttpSession session,
-            RedirectAttributes redirectAttributes) {
-
-        // 이전 단계 완료 확인
-        if (session.getAttribute("signupStep3Complete") == null) {
-            return "redirect:/member/signup/step3";
-        }
-
-        MemberSignupRequestDto requestDto = (MemberSignupRequestDto) session.getAttribute("signupRequest");
-        if (requestDto == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "세션이 만료되었습니다. 다시 시도해주세요.");
-            return "redirect:/member/signup/step1";
-        }
-
-        // 회원가입 처리
-        try {
-            memberService.signup(requestDto);
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/member/signup/step1";
-        }
-
-        // 세션 정리
-        clearSignupSession(session);
-
-        return "redirect:/member/signup/complete";
-    }
+//    /**
+//     * 회원가입 4단계 - 이메일 인증 처리 (인증 완료 버튼 클릭 시)
+//     * <p>
+//     * 참고: 실제 서비스에서는 이메일 링크 클릭으로 인증 처리
+//     * 여기서는 단순화하여 버튼 클릭으로 가입 완료 처리
+//     */
+//    @PostMapping("/signup/step4")
+//    public String signupStep4Process(
+//            HttpSession session,
+//            RedirectAttributes redirectAttributes) {
+//
+//        // 이전 단계 완료 확인
+//        if (session.getAttribute("signupStep3Complete") == null) {
+//            return "redirect:/member/signup/step3";
+//        }
+//
+//        MemberSignupRequestDto requestDto = (MemberSignupRequestDto) session.getAttribute("signupRequest");
+//        if (requestDto == null) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "세션이 만료되었습니다. 다시 시도해주세요.");
+//            return "redirect:/member/signup/step1";
+//        }
+//
+//        // 회원가입 처리
+//        try {
+//            memberService.signup(requestDto);
+//        } catch (IllegalArgumentException e) {
+//            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+//            return "redirect:/member/signup/step1";
+//        }
+//
+//        // 세션 정리
+//        clearSignupSession(session);
+//
+//        return "redirect:/member/signup/complete";
+//    }
 
     // ==================== 이메일 인증 처리 ====================
 
@@ -345,17 +345,15 @@ public class MemberController {
         return "redirect:/member/signup/step4";
     }
 
-    // ==================== 회원가입 완료 ====================
-
-    /**
-     * 회원가입 완료 페이지
-     */
-    @GetMapping("/signup/complete")
-    public String signupComplete() {
-        return "member/signup-complete";
-    }
-
-
+//    // ==================== 회원가입 완료 ====================
+//
+//    /**
+//     * 회원가입 완료 페이지
+//     */
+//    @GetMapping("/signup/complete")
+//    public String signupComplete() {
+//        return "member/signup-complete";
+//    }
 
     // ==================== 유틸리티 메서드 ====================
 
