@@ -1,18 +1,21 @@
 package com.mydata.mydatatestbed.controller;
 
+import com.mydata.mydatatestbed.service.NoticeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Collections;
-
 @Controller
+@RequiredArgsConstructor
 public class MainController {
+
+    private final NoticeService noticeService;
 
     @GetMapping("/")
     public String main(Model model) {
-        // TODO: NoticeService 연동 후 실제 데이터로 교체
-        model.addAttribute("notices", Collections.emptyList());
+        // 최신 공지사항 3개 조회
+        model.addAttribute("notices", noticeService.getRecentNotices(3));
         return "main/index";
     }
 }

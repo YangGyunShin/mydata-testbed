@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>공지사항 상세</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('고객지원', '마이데이터 테스트베드 공지사항 및 고객지원 서비스')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbItems})}"></th:block>
+
+    <!-- 서브 페이지 레이아웃 -->
+    <div class="sub-page-layout">
+        <!-- 사이드바 -->
+        <th:block th:replace="~{layout/sidebar :: sidebar('고객지원', ${sidebarMenus}, ${currentMenu})}"></th:block>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="sub-page-main">
+            <h2 class="content-title">공지사항</h2>
+
+            <!-- 게시글 상세 -->
+            <div class="board-view">
+                <!-- 헤더 -->
+                <div class="board-view-header">
+                    <h3 class="board-view-title">
+                        <span class="badge badge-important" th:if="${notice.pinned}">중요</span>
+                        <span th:text="${notice.title}">공지사항 제목</span>
+                    </h3>
+                    <div class="board-view-info">
+                        <span>작성자: <strong th:text="${notice.authorName} ?: '관리자'">관리자</strong></span>
+                        <span>등록일: <strong th:text="${#temporals.format(notice.createdAt, 'yyyy.MM.dd HH:mm')}">2025.01.17 10:00</strong></span>
+                        <span>조회수: <strong th:text="${notice.viewCount}">0</strong></span>
+                    </div>
+                </div>
+
+                <!-- 본문 -->
+                <div class="board-view-content" th:utext="${notice.content}">
+                    공지사항 내용이 여기에 표시됩니다.
+                </div>
+
+                <!-- 첨부파일 -->
+                <div class="board-view-file" th:if="${notice.attachmentName != null}">
+                    <span>📎 첨부파일: </span>
+                    <a th:href="@{/support/notice/download/{id}(id=${notice.id})}" th:text="${notice.attachmentName}">
+                        첨부파일.pdf
+                    </a>
+                </div>
+
+                <!-- 버튼 영역 -->
+                <div class="board-view-nav">
+                    <a th:href="@{/support/notice}" class="btn btn-secondary">목록</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
