@@ -20,39 +20,38 @@
 - 회원가입 (4단계), 로그인/로그아웃
 - 이메일 인증 기능
 
-### Phase 3 (완료): 공지사항 ✅
+### Phase 3-1: 공지사항 ✅
 - Notice Entity, Repository, DTO, Mapper, Service
 - SupportController (공지사항 부분)
 - notice-list.html, notice-detail.html
 - 목록/상세/검색/페이징 기능
 
+### Phase 3-2: FAQ ✅
+- Faq Entity, FaqCategory Enum
+- FaqRepository (카테고리별 조회, 활성화 필터)
+- FaqResponseDto, FaqMapper
+- FaqService / FaqServiceImpl
+- SupportController (FAQ 부분)
+- faq.html (카테고리 탭 필터링, 아코디언 UI)
+- data.sql 초기 데이터
+
 ---
 
 ## 남은 Phase 3 작업
 
-아래 기능들을 순서대로 구현해주세요.
-
-### 1. FAQ 기능
-- [ ] Faq Entity
-- [ ] FaqCategory Enum (GENERAL, SIGNUP, API, TEST, CONFORMANCE)
-- [ ] FaqRepository
-- [ ] FaqResponseDto
-- [ ] FaqMapper
-- [ ] FaqService / FaqServiceImpl
-- [ ] SupportController에 FAQ 엔드포인트 추가
-- [ ] faq.html 템플릿 (아코디언 형태)
-
-### 2. 문의하기 (Inquiry) 기능
+### 1. 문의하기 (Inquiry) 기능
 - [ ] Inquiry Entity
 - [ ] InquiryStatus Enum (WAITING, COMPLETED)
 - [ ] InquiryRepository
-- [ ] InquiryRequestDto, InquiryResponseDto
+- [ ] InquiryRequestDto, InquiryResponseDto, InquiryListResponseDto
 - [ ] InquiryMapper
 - [ ] InquiryService / InquiryServiceImpl
 - [ ] SupportController에 문의하기 엔드포인트 추가
-- [ ] inquiry-form.html, inquiry-list.html 템플릿
+- [ ] inquiry-form.html (문의 작성 폼, 로그인 필요)
+- [ ] inquiry-list.html (내 문의 목록)
+- [ ] inquiry-detail.html (문의 상세 + 답변)
 
-### 3. 자료실 (Resource) 기능
+### 2. 자료실 (Resource) 기능
 - [ ] Resource Entity
 - [ ] ResourceRepository
 - [ ] ResourceListResponseDto, ResourceDetailResponseDto
@@ -62,7 +61,7 @@
 - [ ] resource-list.html 템플릿
 - [ ] 파일 다운로드 기능
 
-### 4. 자유게시판 (Board) 기능
+### 3. 자유게시판 (Board) 기능
 - [ ] Board Entity
 - [ ] BoardRepository
 - [ ] BoardListResponseDto, BoardDetailResponseDto, BoardRequestDto
@@ -92,57 +91,130 @@
 
 ---
 
-## 참고할 기존 코드 (Notice 패턴 따르기)
+## 참고할 기존 코드 패턴
 
-### Entity 예시 (Notice.java)
+### Entity 예시 (Faq.java)
 ```java
 @Entity
-@Table(name = "notices")
+@Table(name = "faqs")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notice extends BaseTimeEntity {
+public class Faq extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Member author;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private FaqCategory category;
+
+    @Column(nullable = false, length = 500)
+    private String question;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String answer;
+
+    @Column(nullable = false)
+    private int orderNum;
+
+    @Column(nullable = false)
+    private boolean active = true;
 
     @Builder
-    public Notice(String title, String content, boolean pinned, Member author) {
-        this.title = title;
-        this.content = content;
-        this.pinned = pinned;
-        this.viewCount = 0;
-        this.author = author;
+    public Faq(FaqCategory category, String question, String answer, int orderNum) {
+        this.category = category;
+        this.question = question;
+        this.answer = answer;
+        this.orderNum = orderNum;
+        this.active = true;
     }
+
+    // 비즈니스 메서드
+    public void update(FaqCategory category, String question, String answer, int orderNum) { ... }
+    public void toggleActive() { ... }
 }
 ```
 
-### Repository 예시 (NoticeRepository.java)
+### Repository 예시 (FaqRepository.java)
 ```java
-public interface NoticeRepository extends JpaRepository<Notice, Long> {
+public interface FaqRepository extends JpaRepository<Faq, Long> {
     
-    @Query("SELECT n FROM Notice n LEFT JOIN FETCH n.author WHERE n.id = :id")
-    Optional<Notice> findByIdWithAuthor(@Param("id") Long id);
+    @Query("SELECT f FROM Faq f WHERE f.active = true ORDER BY f.orderNum ASC")
+    List<Faq> findAllActiveOrderByOrderNum();
+
+    @Query("SELECT f FROM Faq f WHERE f.active = true AND f.category = :category ORDER BY f.orderNum ASC")
+    List<Faq> findByCategoryAndActiveOrderByOrderNum(@Param("category") FaqCategory category);
 }
 ```
 
-### Mapper 예시 (NoticeMapper.java)
+### Mapper 예시 (FaqMapper.java)
 ```java
 @Component
-public class NoticeMapper {
+public class FaqMapper {
     
-    public NoticeListResponseDto toListDto(Notice notice) {
-        return NoticeListResponseDto.builder()
-                .id(notice.getId())
-                .title(notice.getTitle())
-                .authorName(notice.getAuthor() != null ? notice.getAuthor().getName() : "관리자")
-                .createdAt(notice.getCreatedAt())
+    public FaqResponseDto toResponseDto(Faq faq) {
+        return FaqResponseDto.builder()
+                .id(faq.getId())
+                .category(faq.getCategory())
+                .categoryDisplayName(faq.getCategory().getDisplayName())
+                .question(faq.getQuestion())
+                .answer(faq.getAnswer())
+                .orderNum(faq.getOrderNum())
+                .createdAt(faq.getCreatedAt())
                 .build();
     }
+}
+```
+
+### Service 예시 (FaqServiceImpl.java)
+```java
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class FaqServiceImpl implements FaqService {
+
+    private final FaqRepository faqRepository;
+    private final FaqMapper faqMapper;
+
+    @Override
+    public List<FaqResponseDto> getAllFaqs() {
+        return faqRepository.findAllActiveOrderByOrderNum()
+                .stream()
+                .map(faqMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public List<FaqResponseDto> getFaqsByCategory(FaqCategory category) {
+        return faqRepository.findByCategoryAndActiveOrderByOrderNum(category)
+                .stream()
+                .map(faqMapper::toResponseDto)
+                .toList();
+    }
+}
+```
+
+### Controller 예시 (SupportController - FAQ 부분)
+```java
+@GetMapping("/faq")
+public String faq(@RequestParam(required = false) FaqCategory category, Model model) {
+    List<FaqResponseDto> faqs;
+    if (category != null) {
+        faqs = faqService.getFaqsByCategory(category);
+    } else {
+        faqs = faqService.getAllFaqs();
+    }
+
+    model.addAttribute("faqs", faqs);
+    model.addAttribute("categories", FaqCategory.values());
+    model.addAttribute("selectedCategory", category);
+    model.addAttribute("breadcrumbItems", createFaqBreadcrumb());
+    model.addAttribute("menuTitle", "고객지원");
+    model.addAttribute("menuItems", getSupportMenuItems());
+    model.addAttribute("currentMenu", "/support/faq");
+
+    return "support/faq";
 }
 ```
 
@@ -153,27 +225,34 @@ public class NoticeMapper {
 ```
 src/main/java/com/mydata/mydatatestbed/
 ├── entity/
-│   └── Faq.java, Inquiry.java, Resource.java, Board.java
+│   └── Inquiry.java, Resource.java, Board.java
 ├── entity/Enum/
-│   └── FaqCategory.java, InquiryStatus.java
+│   └── InquiryStatus.java
 ├── repository/
-│   └── FaqRepository.java, InquiryRepository.java, ...
+│   └── InquiryRepository.java, ResourceRepository.java, BoardRepository.java
 ├── dto/
-│   ├── faq/
 │   ├── inquiry/
+│   │   ├── InquiryRequestDto.java
+│   │   ├── InquiryResponseDto.java
+│   │   └── InquiryListResponseDto.java
 │   ├── resource/
+│   │   ├── ResourceListResponseDto.java
+│   │   └── ResourceDetailResponseDto.java
 │   └── board/
+│       ├── BoardRequestDto.java
+│       ├── BoardListResponseDto.java
+│       └── BoardDetailResponseDto.java
 ├── mapper/
-│   └── FaqMapper.java, InquiryMapper.java, ...
+│   └── InquiryMapper.java, ResourceMapper.java, BoardMapper.java
 ├── service/
-│   └── FaqService.java, InquiryService.java, ...
+│   └── InquiryService.java, ResourceService.java, BoardService.java
 └── service/impl/
-    └── FaqServiceImpl.java, InquiryServiceImpl.java, ...
+    └── InquiryServiceImpl.java, ResourceServiceImpl.java, BoardServiceImpl.java
 
 src/main/resources/templates/support/
-├── faq.html
 ├── inquiry-form.html
 ├── inquiry-list.html
+├── inquiry-detail.html
 ├── resource-list.html
 ├── board-list.html
 ├── board-detail.html
@@ -182,12 +261,26 @@ src/main/resources/templates/support/
 
 ---
 
+## 작업 방식 안내
+
+### 역할 분담
+- **사용자**: 백엔드 Java 코드 직접 생성 (Entity, Repository, DTO, Mapper, Service, Controller)
+- **Claude**: 프론트엔드 HTML 템플릿 생성, CSS 수정, 코드 제공
+
+### 작업 순서
+1. Claude가 백엔드 코드를 제공
+2. 사용자가 해당 Java 파일들을 수동으로 생성
+3. Claude가 프론트엔드 템플릿 직접 생성
+4. 테스트 및 디버깅
+
+---
+
 ## 요청사항
 
-1. **FAQ부터 시작**해주세요.
+1. **Inquiry (문의하기) 부터 시작**해주세요.
 2. 각 기능 구현 후 **README.md 개발 로드맵 업데이트** 부탁드립니다.
 3. 새로운 트러블슈팅이 발생하면 **TROUBLESHOOTING.md에 추가**해주세요.
-4. **기존 Notice 코드 패턴을 참고**하여 일관성 있게 구현해주세요.
+4. **기존 FAQ 코드 패턴을 참고**하여 일관성 있게 구현해주세요.
 
 ---
 

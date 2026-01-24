@@ -448,6 +448,111 @@ GET /member/verify-email?token=xxx → 인증 완료 → 로그인 가능
 
 ---
 
+## Thymeleaf 관련 (Phase 3)
+
+### 12. Thymeleaf에서 정적 클래스 접근 금지 오류
+
+**증상**
+- FAQ 페이지 로딩 시 Thymeleaf 템플릿 파싱 오류 발생
+- 에러 메시지: `Instantiation of new objects and access to static classes is forbidden in this context`
+
+**원인**
+Thymeleaf에서 `T(System).lineSeparator()` 같은 정적 클래스 접근 시도:
+
+```html
+<!-- ❌ 잘못된 코드 -->
+<p th:utext="${#strings.replace(faq.answer, T(System).lineSeparator(), '&lt;br/&gt;')}">
+```
+
+Thymeleaf의 보안 정책상 `T()` 연산자를 통한 정적 클래스 접근이 기본적으로 차단됨.
+
+**해결 방법**
+
+방법 1: 단순히 `th:text` 사용 (HTML 이스케이프 자동 처리)
+```html
+<!-- ✅ 권장 -->
+<p th:text="${faq.answer}"></p>
+```
+
+방법 2: CSS로 줄바꿈 처리
+```css
+.faq-answer p {
+    white-space: pre-line;  /* \n을 줄바꿈으로 표시 */
+}
+```
+
+방법 3: Controller/Service에서 미리 변환
+```java
+// Service에서 HTML 변환
+public String convertNewlinesToBr(String text) {
+    return text.replace("\n", "<br/>");
+}
+```
+
+**교훈**
+- Thymeleaf는 보안상 정적 클래스 접근을 차단함
+- `T()`, `new` 등의 SpEL 표현식은 제한될 수 있음
+- 텍스트 포맷팅은 CSS나 백엔드에서 처리하는 것이 안전
+
+---
+
+## 데이터베이스 관련 (Phase 3)
+
+### 13. data.sql이 실행되지 않는 문제
+
+**증상**
+- `src/main/resources/data.sql`에 INSERT 문 작성
+- 서버 시작 시 데이터가 삽입되지 않음
+- H2 콘솔에서 테이블 확인 시 비어있음
+
+**원인**
+Spring Boot 2.5 이상에서는 `data.sql`이 Hibernate가 테이블을 생성하기 **전에** 실행됨:
+
+```
+기존 순서: schema.sql → Hibernate ddl-auto → data.sql
+Spring Boot 2.5+: data.sql → Hibernate ddl-auto (테이블 없음!) → 실패!
+```
+
+**해결 방법**
+`application.yml`에 아래 설정 추가:
+
+```yaml
+spring:
+  jpa:
+    defer-datasource-initialization: true  # Hibernate 후에 data.sql 실행
+  
+  sql:
+    init:
+      mode: always  # 항상 실행 (embedded DB만이면 embedded)
+```
+
+| 설정 | 설명 |
+|------|------|
+| `defer-datasource-initialization: true` | Hibernate가 테이블 생성 후 data.sql 실행 |
+| `sql.init.mode: always` | 항상 SQL 초기화 스크립트 실행 |
+| `sql.init.mode: embedded` | 내장 DB(H2)일 때만 실행 |
+| `sql.init.mode: never` | 절대 실행 안 함 |
+
+**주의사항**
+`mode: always`는 서버 재시작마다 data.sql을 실행하므로 중복 데이터 삽입 발생 가능:
+
+```sql
+-- data.sql 상단에 삭제문 추가
+DELETE FROM faqs;
+
+-- 이후 INSERT문 작성
+INSERT INTO faqs (category, question, answer, order_num, active, created_at, updated_at) VALUES ...;
+```
+
+또는 초기 데이터 로드 후 `mode: never`로 변경.
+
+**교훈**
+- Spring Boot 2.5+ 업그레이드 시 SQL 초기화 순서 변경 주의
+- 파일 DB 사용 시 중복 데이터 문제 고려 필요
+- 운영 환경에서는 Flyway/Liquibase 등 마이그레이션 도구 사용 권장
+
+---
+
 ## 버그 보고 템플릿
 
 새로운 버그를 발견하면 아래 형식으로 추가해주세요:

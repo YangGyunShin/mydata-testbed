@@ -33,7 +33,7 @@
 | **API 가이드** | 데이터 표준 API 규격, 인증/지원/정보제공 API 규격 문서 | 예정 |
 | **테스트베드** | 마이데이터 서비스 테스트, API 서버 테스트 | 예정 |
 | **적합성 심사** | 기능적합성 심사, 보안취약점 결과 점검 | 예정 |
-| **고객지원** | 공지사항, FAQ, 문의하기, 자료실, 자유게시판 | 공지사항 ✅ |
+| **고객지원** | 공지사항, FAQ, 문의하기, 자료실, 자유게시판 | 공지사항 ✅ FAQ ✅ |
 | **회원관리** | 회원가입(4단계), 로그인/로그아웃, 이메일 인증 | ✅ 완료 |
 
 ---
@@ -188,9 +188,11 @@ src/main/java/com/mydata/mydatatestbed/
 │   ├── BaseTimeEntity.java              # 공통 시간 필드 (createdAt, updatedAt)
 │   ├── Member.java                      # 회원 Entity
 │   ├── Notice.java                      # 공지사항 Entity
+│   ├── Faq.java                         # FAQ Entity
 │   ├── EmailVerificationToken.java      # 이메일 인증 토큰 Entity
 │   └── Enum/
-│       └── MemberRole.java              # 회원 권한 Enum
+│       ├── MemberRole.java              # 회원 권한 Enum
+│       └── FaqCategory.java             # FAQ 카테고리 Enum
 │
 ├── vo/                                  # Value Objects
 │   ├── EmailVo.java                     # 이메일 VO (형식 검증 포함)
@@ -200,28 +202,34 @@ src/main/java/com/mydata/mydatatestbed/
 ├── repository/                          # Repository
 │   ├── MemberRepository.java
 │   ├── NoticeRepository.java            # 공지사항 Repository
+│   ├── FaqRepository.java               # FAQ Repository
 │   └── EmailVerificationTokenRepository.java
 │
 ├── dto/                                 # DTO
 │   ├── member/
 │   │   ├── MemberSignupRequestDto.java
 │   │   └── MemberResponseDto.java
-│   └── notice/
-│       ├── NoticeListResponseDto.java   # 공지사항 목록 응답 DTO
-│       └── NoticeDetailResponseDto.java # 공지사항 상세 응답 DTO
+│   ├── notice/
+│   │   ├── NoticeListResponseDto.java   # 공지사항 목록 응답 DTO
+│   │   └── NoticeDetailResponseDto.java # 공지사항 상세 응답 DTO
+│   └── faq/
+│       └── FaqResponseDto.java          # FAQ 응답 DTO
 │
 ├── mapper/                              # Mapper (DTO ↔ Entity 변환)
 │   ├── MemberMapper.java
-│   └── NoticeMapper.java                # 공지사항 Mapper
+│   ├── NoticeMapper.java                # 공지사항 Mapper
+│   └── FaqMapper.java                   # FAQ Mapper
 │
 ├── service/                             # Service
 │   ├── MemberService.java
 │   ├── EmailService.java
 │   ├── NoticeService.java               # 공지사항 서비스 인터페이스
+│   ├── FaqService.java                  # FAQ 서비스 인터페이스
 │   └── impl/
 │       ├── MemberServiceImpl.java
 │       ├── EmailServiceImpl.java
-│       └── NoticeServiceImpl.java       # 공지사항 서비스 구현체
+│       ├── NoticeServiceImpl.java       # 공지사항 서비스 구현체
+│       └── FaqServiceImpl.java          # FAQ 서비스 구현체
 │
 ├── security/                            # Spring Security
 │   ├── CustomUserDetails.java
@@ -302,7 +310,7 @@ src/main/resources/
 │
 ├── 💬 고객지원
 │   ├── 공지사항 ✅ (목록/상세/검색/페이징)
-│   ├── FAQ
+│   ├── FAQ ✅ (카테고리 필터링, 아코디언 UI)
 │   ├── 문의하기
 │   ├── 자료실
 │   └── 자유게시판
@@ -346,7 +354,16 @@ src/main/resources/
          │                 └──────────────────┘
          │
          │                 ┌──────────────────┐
-         │                 │      faqs        │  (예정)
+         │                 │      faqs        │  ✅ 완료
+         │                 ├──────────────────┤
+         │                 │ id (PK)          │
+         │                 │ category         │
+         │                 │ question         │
+         │                 │ answer           │
+         │                 │ order_num        │
+         │                 │ active           │
+         │                 │ created_at       │
+         │                 │ updated_at       │
          │                 └──────────────────┘
          │
          │                 ┌──────────────────┐
@@ -504,6 +521,109 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
 ---
 
+## FAQ 기능
+
+### 기능 목록
+
+| 기능 | URL | 설명 |
+|------|-----|------|
+| 전체 조회 | `GET /support/faq` | 모든 활성화된 FAQ 목록 |
+| 카테고리 필터 | `GET /support/faq?category=GENERAL` | 특정 카테고리 FAQ만 조회 |
+
+### 카테고리 종류
+
+| Enum 값 | 한글 표시명 | 설명 |
+|---------|-----------|------|
+| `GENERAL` | 일반 | 일반적인 질문 |
+| `SIGNUP` | 회원가입 | 회원가입 관련 질문 |
+| `API` | API | API 사용 관련 질문 |
+| `TEST` | 테스트 | 테스트베드 사용 관련 질문 |
+| `CONFORMANCE` | 적합성심사 | 적합성 심사 관련 질문 |
+
+### 조회 흐름
+```
+[헤더] FAQ 클릭
+      │
+      │ GET /support/faq
+      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  SupportController.faq()                                         │
+│    └─→ FaqService.getAllFaqs()                                  │
+│          └─→ FaqRepository.findAllActiveOrderByOrderNum()       │
+└─────────────────────────────────────────────────────────────────┘
+      │
+      ▼
+[faq.html] 전체 FAQ 표시 (아코디언 UI)
+      │
+      │ [일반] 탭 클릭: GET /support/faq?category=GENERAL
+      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  SupportController.faq(category=GENERAL)                         │
+│    └─→ FaqService.getFaqsByCategory(GENERAL)                    │
+│          └─→ FaqRepository.findByCategoryAndActiveOrderByOrderNum()│
+└─────────────────────────────────────────────────────────────────┘
+      │
+      ▼
+[faq.html] 일반 카테고리 FAQ만 표시
+```
+
+### Faq Entity 주요 코드
+
+```java
+@Entity
+@Table(name = "faqs")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Faq extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private FaqCategory category;
+
+    @Column(nullable = false, length = 500)
+    private String question;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String answer;
+
+    @Column(nullable = false)
+    private int orderNum;  // 정렬 순서
+
+    @Column(nullable = false)
+    private boolean active = true;  // 활성화 여부
+
+    // === 비즈니스 메서드 === //
+    public void update(FaqCategory category, String question, String answer, int orderNum) { ... }
+    public void toggleActive() { ... }
+    public void deactivate() { ... }
+    public void activate() { ... }
+}
+```
+
+### FaqRepository 주요 쿼리
+
+```java
+public interface FaqRepository extends JpaRepository<Faq, Long> {
+
+    // 활성화된 전체 FAQ 조회 (정렬순)
+    @Query("SELECT f FROM Faq f WHERE f.active = true ORDER BY f.orderNum ASC")
+    List<Faq> findAllActiveOrderByOrderNum();
+
+    // 특정 카테고리의 활성화된 FAQ 조회
+    @Query("SELECT f FROM Faq f WHERE f.active = true AND f.category = :category ORDER BY f.orderNum ASC")
+    List<Faq> findByCategoryAndActiveOrderByOrderNum(@Param("category") FaqCategory category);
+
+    // 카테고리별 FAQ 개수
+    long countByCategoryAndActiveTrue(FaqCategory category);
+}
+```
+
+---
+
 ## 실행 방법
 
 ### 요구사항
@@ -591,7 +711,13 @@ spring:
 - [x] notice-list.html, notice-detail.html
 - [x] MainController에 공지사항 연동
 - [x] H2 파일 DB로 변경 (데이터 유지)
-- [ ] Faq Entity, Repository, Service, Controller, 템플릿
+- [x] Faq Entity, FaqCategory Enum
+- [x] FaqRepository
+- [x] FaqResponseDto
+- [x] FaqMapper
+- [x] FaqService / FaqServiceImpl
+- [x] SupportController (FAQ 부분)
+- [x] faq.html (카테고리 필터링, 아코디언 UI)
 - [ ] Inquiry Entity, Repository, Service, Controller, 템플릿
 - [ ] Resource Entity, Repository, Service, Controller, 템플릿
 - [ ] Board Entity, Repository, Service, Controller, 템플릿
