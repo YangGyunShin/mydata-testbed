@@ -1,21 +1,29 @@
 package com.mydata.mydatatestbed.controller;
 
+import com.mydata.mydatatestbed.dto.inquiry.InquiryListResponseDto;
+import com.mydata.mydatatestbed.dto.inquiry.InquiryRequestDto;
+import com.mydata.mydatatestbed.dto.inquiry.InquiryResponseDto;
 import com.mydata.mydatatestbed.dto.notice.NoticeDetailResponseDto;
 import com.mydata.mydatatestbed.dto.notice.NoticeListResponseDto;
+import com.mydata.mydatatestbed.security.CustomUserDetails;
+import com.mydata.mydatatestbed.service.InquiryService;
 import com.mydata.mydatatestbed.service.NoticeService;
 import com.mydata.mydatatestbed.dto.faq.FaqResponseDto;
 import com.mydata.mydatatestbed.entity.Enum.FaqCategory;
 import com.mydata.mydatatestbed.service.FaqService;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -45,6 +53,7 @@ public class SupportController {
 
     private final NoticeService noticeService;
     private final FaqService faqService;
+    private final InquiryService inquiryService;
 
     /**
      * 페이지당 게시글 수
@@ -161,6 +170,69 @@ public class SupportController {
         return "support/faq";
     }
 
+    // === 문의하기 관련 메서드 추가 ===
+
+    // 문의 작성 폼
+    @GetMapping("/inquiry")
+    public String inquiryForm(Model model) {
+        model.addAttribute("inquiryRequest", new InquiryRequestDto());
+        model.addAttribute("breadcrumbItems", createInquiryBreadcrumb("문의하기", "/support/inquiry"));
+        model.addAttribute("sidebarMenus", createSupportSidebarMenus());
+        model.addAttribute("currentMenu", "/support/inquiry");
+        return "support/inquiry-form";
+    }
+
+    // 문의 등록
+    @PostMapping("/inquiry")
+    public String createInquiry(@Valid @ModelAttribute("inquiryRequest") InquiryRequestDto requestDto,
+                                BindingResult bindingResult,
+                                @AuthenticationPrincipal CustomUserDetails userDetails,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("breadcrumbItems", createInquiryBreadcrumb("문의하기", "/support/inquiry"));
+            model.addAttribute("sidebarMenus", createSupportSidebarMenus());
+            model.addAttribute("currentMenu", "/support/inquiry");
+            return "support/inquiry-form";
+        }
+
+        inquiryService.createInquiry(userDetails.getMember(), requestDto);
+        redirectAttributes.addFlashAttribute("message", "문의가 등록되었습니다.");
+        return "redirect:/support/inquiry/list";
+    }
+
+    // 내 문의 목록
+    @GetMapping("/inquiry/list")
+    public String inquiryList(@RequestParam(defaultValue = "0") int page,
+                              @AuthenticationPrincipal CustomUserDetails userDetails,
+                              Model model) {
+
+        Pageable pageable = PageRequest.of(page, DEFAULT_PAGE_SIZE);
+        Page<InquiryListResponseDto> inquiries = inquiryService.getMyInquiries(userDetails.getMember(), pageable);
+
+        model.addAttribute("inquiries", inquiries);
+        model.addAttribute("totalCount", inquiryService.countMyInquiries(userDetails.getMember()));
+        model.addAttribute("breadcrumbItems", createInquiryBreadcrumb("내 문의 목록", "/support/inquiry/list"));
+        model.addAttribute("sidebarMenus", createSupportSidebarMenus());
+        model.addAttribute("currentMenu", "/support/inquiry");
+        return "support/inquiry-list";
+    }
+
+    // 문의 상세
+    @GetMapping("/inquiry/{id}")
+    public String inquiryDetail(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Model model) {
+
+        InquiryResponseDto inquiry = inquiryService.getInquiryDetail(id, userDetails.getMember());
+        model.addAttribute("inquiry", inquiry);
+        model.addAttribute("breadcrumbItems", createInquiryBreadcrumb("문의 상세", "/support/inquiry/" + id));
+        model.addAttribute("sidebarMenus", createSupportSidebarMenus());
+        model.addAttribute("currentMenu", "/support/inquiry");
+        return "support/inquiry-detail";
+    }
 
     // ==================== 유틸리티 메서드 ====================
 
@@ -206,6 +278,16 @@ public class SupportController {
         return List.of(
                 Map.of("name", "고객지원", "url", "#"),
                 Map.of("name", "FAQ", "url", "/support/faq")
+        );
+    }
+
+    /**
+     * 문의하기 브레드크럼 생성
+     */
+    private List<Map<String, String>> createInquiryBreadcrumb(String currentPageName, String currentPageUrl) {
+        return List.of(
+                Map.of("name", "고객지원", "url", "#"),
+                Map.of("name", currentPageName, "url", currentPageUrl)
         );
     }
 }
