@@ -1,6 +1,6 @@
 # 📊 프로젝트 진행 상황
 
-> **마지막 업데이트**: 2025-01-25  
+> **마지막 업데이트**: 2025-01-26  
 > **현재 Phase**: Phase 3 진행 중 (게시판 기능)
 
 ---
@@ -10,7 +10,7 @@
 ```
 Phase 1: 기본 구조      [██████████] 100% ✅
 Phase 2: 회원 기능      [██████████] 100% ✅
-Phase 3: 게시판 기능    [██████░░░░]  60% 🔄
+Phase 3: 게시판 기능    [████████░░]  80% 🔄
 Phase 4: 핵심 기능      [░░░░░░░░░░]   0% ⏳
 Phase 5: 완성도         [░░░░░░░░░░]   0% ⏳
 ```
@@ -86,22 +86,30 @@ Phase 5: 완성도         [░░░░░░░░░░]   0% ⏳
 | Controller | `SupportController` (Inquiry 부분) |
 | Templates | `inquiry-form.html`, `inquiry-list.html`, `inquiry-detail.html` |
 
+#### 3-4. 자료실 (Resource) ✅
+
+| 항목 | 파일 |
+|------|------|
+| Entity | `Resource.java` |
+| Repository | `ResourceRepository.java` |
+| DTO | `ResourceListResponseDto`, `ResourceDetailResponseDto`, `ResourceNavDto` |
+| Mapper | `ResourceMapper.java` |
+| Service | `ResourceService`, `ResourceServiceImpl` |
+| Controller | `SupportController` (Resource 부분) |
+| Templates | `resource-list.html`, `resource-detail.html` |
+| 초기 데이터 | `data.sql` (7건의 테스트 데이터) |
+
+**주요 기능:**
+- 목록 페이지: 번호, 제목, 첨부파일 아이콘, 등록일
+- 상세 페이지: 제목, 날짜, 조회수, 본문, 첨부파일 다운로드
+- 이전글/다음글 네비게이션
+- 조회수 자동 증가
+- 다운로드 카운트 자동 증가
+- 키워드 검색 기능
+
 ---
 
 ## 📝 남은 작업
-
-### Phase 3-4: 자료실 (Resource) ⬜
-
-| 항목 | 상태 |
-|------|------|
-| Resource Entity | ⬜ |
-| ResourceRepository | ⬜ |
-| ResourceListResponseDto | ⬜ |
-| ResourceMapper | ⬜ |
-| ResourceService / ResourceServiceImpl | ⬜ |
-| SupportController (Resource 부분) | ⬜ |
-| resource-list.html | ⬜ |
-| 파일 다운로드 기능 | ⬜ |
 
 ### Phase 3-5: 자유게시판 (Board) ⬜
 
@@ -157,21 +165,24 @@ src/main/java/com/mydata/mydatatestbed/
 │   ├── Notice.java
 │   ├── Faq.java
 │   ├── Inquiry.java
-│   ├── enums/
-│   │   ├── MemberRole.java
-│   │   ├── FaqCategory.java
-│   │   └── InquiryStatus.java
-│   └── vo/
-│       ├── Email.java
-│       ├── Password.java
-│       └── Phone.java
+│   ├── Resource.java                    # ✅ 추가됨
+│   └── Enum/
+│       ├── MemberRole.java
+│       ├── FaqCategory.java
+│       └── InquiryStatus.java
+│
+├── vo/
+│   ├── EmailVo.java
+│   ├── PasswordVo.java
+│   └── PhoneVo.java
 │
 ├── repository/
 │   ├── MemberRepository.java
 │   ├── EmailVerificationTokenRepository.java
 │   ├── NoticeRepository.java
 │   ├── FaqRepository.java
-│   └── InquiryRepository.java
+│   ├── InquiryRepository.java
+│   └── ResourceRepository.java          # ✅ 추가됨
 │
 ├── dto/
 │   ├── member/
@@ -182,16 +193,21 @@ src/main/java/com/mydata/mydatatestbed/
 │   │   └── NoticeDetailResponseDto.java
 │   ├── faq/
 │   │   └── FaqResponseDto.java
-│   └── inquiry/
-│       ├── InquiryRequestDto.java
-│       ├── InquiryResponseDto.java
-│       └── InquiryListResponseDto.java
+│   ├── inquiry/
+│   │   ├── InquiryRequestDto.java
+│   │   ├── InquiryResponseDto.java
+│   │   └── InquiryListResponseDto.java
+│   └── resource/                         # ✅ 추가됨
+│       ├── ResourceListResponseDto.java
+│       ├── ResourceDetailResponseDto.java
+│       └── ResourceNavDto.java
 │
 ├── mapper/
 │   ├── MemberMapper.java
 │   ├── NoticeMapper.java
 │   ├── FaqMapper.java
-│   └── InquiryMapper.java
+│   ├── InquiryMapper.java
+│   └── ResourceMapper.java               # ✅ 추가됨
 │
 ├── service/
 │   ├── MemberService.java
@@ -199,18 +215,26 @@ src/main/java/com/mydata/mydatatestbed/
 │   ├── NoticeService.java
 │   ├── FaqService.java
 │   ├── InquiryService.java
+│   ├── ResourceService.java              # ✅ 추가됨
 │   └── impl/
+│       ├── MemberServiceImpl.java
+│       ├── EmailServiceImpl.java
 │       ├── NoticeServiceImpl.java
 │       ├── FaqServiceImpl.java
-│       └── InquiryServiceImpl.java
+│       ├── InquiryServiceImpl.java
+│       └── ResourceServiceImpl.java      # ✅ 추가됨
 │
-└── security/
-    ├── CustomUserDetails.java
-    └── CustomUserDetailsService.java
+├── security/
+│   ├── CustomUserDetails.java
+│   └── CustomUserDetailsService.java
+│
+└── validation/
+    ├── PasswordMatching.java
+    └── PasswordMatchingValidator.java
 
 src/main/resources/
 ├── application.yml
-├── data.sql
+├── data.sql                              # ✅ Resource 데이터 추가됨
 ├── templates/
 │   ├── layout/
 │   │   ├── default-layout.html
@@ -237,7 +261,9 @@ src/main/resources/
 │   │   ├── faq.html
 │   │   ├── inquiry-form.html
 │   │   ├── inquiry-list.html
-│   │   └── inquiry-detail.html
+│   │   ├── inquiry-detail.html
+│   │   ├── resource-list.html           # ✅ 추가됨
+│   │   └── resource-detail.html         # ✅ 추가됨
 │   └── error/
 └── static/
     ├── css/
@@ -269,6 +295,9 @@ src/main/resources/
 | `/support/notice` | GET | 공지사항 목록 |
 | `/support/notice/{id}` | GET | 공지사항 상세 |
 | `/support/faq` | GET | FAQ |
+| `/support/resource` | GET | 자료실 목록 ✅ |
+| `/support/resource/{id}` | GET | 자료실 상세 ✅ |
+| `/support/resource/{id}/download` | GET | 자료 다운로드 ✅ |
 
 ### 인증 필요 URL
 

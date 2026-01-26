@@ -12,6 +12,7 @@
 - [JPA 관련](#jpa-관련)
 - [이메일 인증 관련](#이메일-인증-관련)
 - [데이터베이스 관련](#데이터베이스-관련)
+- [Controller 관련](#controller-관련)
 
 ---
 
@@ -550,6 +551,67 @@ INSERT INTO faqs (category, question, answer, order_num, active, created_at, upd
 - Spring Boot 2.5+ 업그레이드 시 SQL 초기화 순서 변경 주의
 - 파일 DB 사용 시 중복 데이터 문제 고려 필요
 - 운영 환경에서는 Flyway/Liquibase 등 마이그레이션 도구 사용 권장
+
+---
+
+## Controller 관련
+
+### 14. 헬퍼 메서드 시그니처 불일치 오류
+
+**증상**
+- 컴파일 오류 발생
+- 에러 메시지: `method createResourceBreadcrumb in class SupportController cannot be applied to given types`
+
+**원인**
+- 헬퍼 메서드(예: `createResourceBreadcrumb`)의 파라미터 개수와 호출부가 일치하지 않음
+- 코드 수정 과정에서 메서드 시그니처가 변경되었으나 호출부는 업데이트되지 않음
+
+```java
+// ❌ 메서드 정의와 호출부 불일치
+
+// 메서드 정의 (파라미터 없음)
+private List<Map<String, String>> createResourceBreadcrumb() {
+    return List.of(...);
+}
+
+// 호출부 (파라미터 2개 전달)
+model.addAttribute("breadcrumbItems", createResourceBreadcrumb("자료실", "/support/resource"));
+```
+
+**해결 방법**
+
+**방법 1: 파라미터가 필요한 경우**
+```java
+// 메서드 정의
+private List<Map<String, String>> createResourceBreadcrumb(String pageName, String pageUrl) {
+    return List.of(
+            Map.of("name", "고객지원", "url", "#"),
+            Map.of("name", pageName, "url", pageUrl)
+    );
+}
+
+// 호출부
+model.addAttribute("breadcrumbItems", createResourceBreadcrumb("자료실", "/support/resource"));
+```
+
+**방법 2: 파라미터 없는 버전 (고정값)**
+```java
+// 메서드 정의
+private List<Map<String, String>> createResourceBreadcrumb() {
+    return List.of(
+            Map.of("name", "고객지원", "url", "#"),
+            Map.of("name", "자료실", "url", "/support/resource")
+    );
+}
+
+// 호출부
+model.addAttribute("breadcrumbItems", createResourceBreadcrumb());
+```
+
+**교훈**
+- 헬퍼 메서드 수정 시 모든 호출부도 함께 확인할 것
+- IDE의 "Find Usages" 기능 활용 권장
+- 비슷한 기능의 메서드들은 패턴을 통일 (예: 모든 브레드크럼 메서드는 파라미터 2개 또는 0개로 통일)
 
 ---
 

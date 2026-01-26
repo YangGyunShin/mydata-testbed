@@ -45,8 +45,8 @@ Password: (비워두기)
 | **공지사항** | 목록/상세, 검색, 페이징 | ✅ 완료 |
 | **FAQ** | 카테고리별 필터, 아코디언 UI | ✅ 완료 |
 | **문의하기** | 1:1 문의 작성, 내 문의 목록/상세 | ✅ 완료 |
-| **자료실** | 자료 목록, 파일 다운로드 | ⏳ 예정 |
-| **자유게시판** | 글쓰기, 목록, 상세 | ⏳ 예정 |
+| **자료실** | 목록/상세, 이전글/다음글, 파일 다운로드 | ✅ 완료 |
+| **자유게시판** | 글쓰기, 목록, 상세, 수정/삭제 | ⏳ 진행 예정 |
 | **테스트베드** | API 테스트 환경 | ⏳ 예정 |
 
 ---
@@ -79,18 +79,48 @@ Password: (비워두기)
 src/main/java/com/mydata/mydatatestbed/
 ├── config/          # SecurityConfig, WebConfig, AuditConfig
 ├── controller/      # MemberController, SupportController, MainController
-├── entity/          # Member, Notice, Faq, Inquiry + enums, vo
+├── entity/          # Member, Notice, Faq, Inquiry, Resource + enums
+├── vo/              # Email, Password, Phone (Value Objects)
 ├── repository/      # JPA Repositories
 ├── dto/             # Request/Response DTOs
 ├── mapper/          # Entity ↔ DTO 변환
-├── service/         # 비즈니스 로직
-└── security/        # CustomUserDetails, CustomUserDetailsService
+├── service/         # 비즈니스 로직 (인터페이스 + impl)
+├── security/        # CustomUserDetails, CustomUserDetailsService
+└── validation/      # 커스텀 검증 어노테이션
 
 src/main/resources/
 ├── templates/       # Thymeleaf 템플릿
+│   ├── layout/      # 레이아웃 (header, footer, sidebar)
+│   ├── fragments/   # 공통 조각 (breadcrumb, pagination)
+│   ├── member/      # 회원 (로그인, 회원가입)
+│   └── support/     # 고객지원 (notice, faq, inquiry, resource)
 ├── static/          # CSS, JS, Images
-└── application.yml  # 설정
+├── application.yml  # 설정
+└── data.sql         # 초기 데이터 (FAQ, Resource)
 ```
+
+---
+
+## 🔗 구현된 URL
+
+### 공개 URL
+
+| URL | 설명 |
+|-----|------|
+| `/` | 메인 페이지 |
+| `/member/login` | 로그인 |
+| `/member/signup/step1~4` | 회원가입 |
+| `/support/notice` | 공지사항 목록 |
+| `/support/notice/{id}` | 공지사항 상세 |
+| `/support/faq` | FAQ |
+| `/support/resource` | 자료실 목록 |
+| `/support/resource/{id}` | 자료실 상세 |
+
+### 인증 필요 URL
+
+| URL | 설명 |
+|-----|------|
+| `/support/inquiry` | 문의 작성/목록/상세 |
 
 ---
 
