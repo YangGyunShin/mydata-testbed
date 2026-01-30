@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default-layout}">
 <head>
-    <title>자유게시판 - 상세보기</title>
+    <title>자유게시판 상세</title>
     <th:block layout:fragment="css">
         <link rel="stylesheet" th:href="@{/css/sub-page.css}">
         <link rel="stylesheet" th:href="@{/css/sidebar.css}">
@@ -12,7 +12,7 @@
 <body>
 <main layout:fragment="content">
     <!-- 페이지 배너 -->
-    <th:block th:replace="~{fragments/page-banner :: page-banner('고객지원', '자유게시판')}"></th:block>
+    <th:block th:replace="~{fragments/page-banner :: page-banner('고객지원', '마이데이터 테스트베드 관련 정보를 공유하고 자유롭게 의견을 나눠보세요.')}"></th:block>
 
     <!-- 브레드크럼 -->
     <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbItems})}"></th:block>
@@ -20,7 +20,7 @@
     <!-- 서브 페이지 레이아웃 -->
     <div class="sub-page-layout">
         <!-- 사이드바 -->
-        <th:block th:replace="~{layout/sidebar :: sidebar(${menuTitle}, ${menuItems}, ${currentMenu})}"></th:block>
+        <th:block th:replace="~{layout/sidebar :: sidebar('고객지원', ${sidebarMenus}, ${currentMenu})}"></th:block>
 
         <!-- 메인 콘텐츠 -->
         <div class="sub-page-main">
@@ -32,31 +32,31 @@
 
             <!-- 게시글 상세 -->
             <div class="board-view">
+                <!-- 헤더 -->
                 <div class="board-view-header">
                     <h3 class="board-view-title" th:text="${board.title}">게시글 제목</h3>
                     <div class="board-view-info">
-                        <span>👤 <strong th:text="${board.authorName}">작성자</strong></span>
-                        <span>📅 <span th:text="${#temporals.format(board.createdAt, 'yyyy.MM.dd HH:mm')}">2025.01.20 10:00</span></span>
-                        <span>👁 조회 <span th:text="${board.viewCount}">0</span></span>
-                        <span th:if="${board.updatedAt != board.createdAt}">
-                            ✏️ 수정 <span th:text="${#temporals.format(board.updatedAt, 'yyyy.MM.dd HH:mm')}">2025.01.20 12:00</span>
-                        </span>
+                        <span>작성자: <strong th:text="${board.authorName}">작성자</strong></span>
+                        <span>등록일: <strong th:text="${#temporals.format(board.createdAt, 'yyyy.MM.dd HH:mm')}">2025.01.20 10:00</strong></span>
+                        <span>조회수: <strong th:text="${board.viewCount}">0</strong></span>
                     </div>
                 </div>
 
-                <div class="board-view-content" th:utext="${#strings.replace(board.content, T(System).lineSeparator(), '&lt;br&gt;')}">
+                <!-- 본문 -->
+                <div class="board-view-content" th:utext="${board.content}">
                     게시글 내용이 여기에 표시됩니다.
                 </div>
 
                 <!-- 첨부파일 -->
-                <div class="board-view-file" th:if="${board.hasAttachment()}">
-                    <strong>📎 첨부파일:</strong>
-                    <a th:href="@{/support/board/{id}/download(id=${board.id})}" th:text="${board.attachmentName + ' (' + board.formattedFileSize + ')'}">
-                        첨부파일.pdf (1.2 MB)
+                <div class="board-view-file" th:if="${board.hasAttachment}">
+                    <span>📎 첨부파일: </span>
+                    <a th:href="@{/support/board/{id}/download(id=${board.id})}">
+                        <span th:text="${board.attachmentName}">첨부파일.pdf</span>
+                        <span th:if="${board.formattedFileSize}" th:text="'(' + ${board.formattedFileSize} + ')'"></span>
                     </a>
                 </div>
 
-                <!-- 네비게이션 버튼 -->
+                <!-- 버튼 영역 -->
                 <div class="board-view-nav">
                     <a th:href="@{/support/board}" class="btn btn-secondary">목록</a>
                     
@@ -65,7 +65,7 @@
                         <a th:href="@{/support/board/{id}/edit(id=${board.id})}" class="btn btn-outline">수정</a>
                         <form th:action="@{/support/board/{id}/delete(id=${board.id})}" method="post" style="display: inline;"
                               onsubmit="return confirm('정말 삭제하시겠습니까?');">
-                            <button type="submit" class="btn btn-danger-outline">삭제</button>
+                            <button type="submit" class="btn btn-danger">삭제</button>
                         </form>
                     </th:block>
                 </div>
@@ -76,8 +76,7 @@
 
 <th:block layout:fragment="script">
 <style>
-/* 추가 스타일 */
-.btn-danger-outline {
+.btn-danger {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -85,16 +84,16 @@
     font-size: 0.9375rem;
     font-weight: 500;
     border-radius: 4px;
-    background-color: transparent;
-    color: #dc3545;
+    background-color: #dc3545;
+    color: #fff;
     border: 1px solid #dc3545;
     transition: all 0.2s ease;
     cursor: pointer;
 }
 
-.btn-danger-outline:hover {
-    background-color: #dc3545;
-    color: #fff;
+.btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
 }
 </style>
 </th:block>

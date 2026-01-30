@@ -74,9 +74,10 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public Long createBoard(BoardRequestDto requestDto, Member member, MultipartFile file) {
-        // 1. 첨부파일 존재 여부 확인
         Board board;
-        if (file != null && !file.isEmpty()) {
+        
+        // 1. 첨부파일 존재 여부 확인 (더 강력한 체크)
+        if (hasFile(file)) {
             // 2-A. 첨부파일 있음 → 파일 저장 후 Board 생성
             FileInfo fileInfo = fileService.saveFile(file, FILE_SUB_DIR);
             board = boardMapper.toEntity(requestDto, member,
@@ -109,7 +110,7 @@ public class BoardServiceImpl implements BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
         // 2. 작성자 본인 확인
-        if (!board.isAuthor(member.getId())) {
+        if (!board.isAuthor(member.getId()) && !member.isAdmin()) {
             throw new IllegalArgumentException("게시글 수정 권한이 없습니다.");
         }
 
@@ -119,8 +120,8 @@ public class BoardServiceImpl implements BoardService {
             board.removeAttachment();
         }
 
-        // 4. 새 첨부파일 업로드 처리
-        if (file != null && !file.isEmpty()) {
+        // 4. 새 첨부파일 업로드 처리 (더 강력한 체크)
+        if (hasFile(file)) {
             // 4-A. 새 파일 있음
             // 기존 파일이 있으면 먼저 삭제
             if (board.getAttachmentPath() != null) {
@@ -163,5 +164,20 @@ public class BoardServiceImpl implements BoardService {
 
         // 4. DB에서 게시글 삭제
         boardRepository.delete(board);
+    }
+
+    /**
+     * 파일 존재 여부를 안전하게 확인
+     * 
+     * 단순히 file != null && !file.isEmpty()만으로는 부족함
+     * - 브라우저에 따라 빈 파일도 isEmpty() = false일 수 있음
+     * - 파일명이 없거나 크기가 0인 경우도 체크
+     */
+    private boolean hasFile(MultipartFile file) {
+        return file != null 
+                && !file.isEmpty() 
+                && file.getSize() > 0
+                && file.getOriginalFilename() != null 
+                && !file.getOriginalFilename().trim().isEmpty();
     }
 }

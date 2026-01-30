@@ -21,7 +21,7 @@
     <!-- 서브 페이지 레이아웃 -->
     <div class="sub-page-layout">
         <!-- 사이드바 -->
-        <th:block th:replace="~{layout/sidebar :: sidebar(${menuTitle}, ${menuItems}, ${currentMenu})}"></th:block>
+        <th:block th:replace="~{layout/sidebar :: sidebar('고객지원', ${sidebarMenus}, ${currentMenu})}"></th:block>
 
         <!-- 메인 콘텐츠 -->
         <div class="sub-page-main">
@@ -31,19 +31,19 @@
             <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-            <!-- 게시글 수 & 검색 -->
+            <!-- 검색 및 게시물 수 -->
             <div class="board-header">
                 <p class="board-count">
                     총 <strong th:text="${boards.totalElements}">0</strong>개의 게시글
                 </p>
-                <form th:action="@{/support/board}" method="get" class="search-box">
+                <form class="search-box" th:action="@{/support/board}" method="get">
                     <select name="searchType" class="form-control" style="width: 100px;">
                         <option value="all" th:selected="${searchType == 'all'}">전체</option>
                         <option value="title" th:selected="${searchType == 'title'}">제목</option>
                         <option value="author" th:selected="${searchType == 'author'}">작성자</option>
                     </select>
                     <input type="text" name="keyword" class="form-control" 
-                           th:value="${keyword}" placeholder="검색어를 입력하세요">
+                           placeholder="검색어를 입력하세요" th:value="${keyword}">
                     <button type="submit" class="btn btn-primary">검색</button>
                 </form>
             </div>
@@ -60,17 +60,20 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- 게시글이 있을 때 -->
                     <tr th:each="board, status : ${boards.content}">
                         <td th:text="${boards.totalElements - (boards.number * boards.size) - status.index}">1</td>
                         <td class="title">
-                            <a th:href="@{/support/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 제목</a>
+                            <a th:href="@{/support/board/{id}(id=${board.id})}">
+                                <span th:text="${board.title}">게시글 제목</span>
+                            </a>
                             <span th:if="${board.hasAttachment}" class="file-icon" title="첨부파일">📎</span>
                         </td>
                         <td th:text="${board.authorName}">작성자</td>
                         <td th:text="${#temporals.format(board.createdAt, 'yyyy.MM.dd')}">2025.01.20</td>
                         <td th:text="${board.viewCount}">0</td>
                     </tr>
-                    <!-- 데이터 없을 때 -->
+                    <!-- 게시글이 없을 때 -->
                     <tr th:if="${#lists.isEmpty(boards.content)}">
                         <td colspan="5" class="text-center" style="padding: 40px;">
                             등록된 게시글이 없습니다.
@@ -82,12 +85,9 @@
             <!-- 페이지네이션 -->
             <th:block th:replace="~{fragments/pagination :: pagination(${boards}, '/support/board')}"></th:block>
 
-            <!-- 글쓰기 버튼 -->
-            <div class="text-right mt-4" sec:authorize="isAuthenticated()">
+            <!-- 글쓰기 버튼 (로그인 사용자만) -->
+            <div class="btn-wrap text-right mt-4" sec:authorize="isAuthenticated()">
                 <a th:href="@{/support/board/write}" class="btn btn-primary">글쓰기</a>
-            </div>
-            <div class="text-right mt-4" sec:authorize="!isAuthenticated()">
-                <a th:href="@{/member/login}" class="btn btn-outline">로그인 후 글쓰기</a>
             </div>
         </div>
     </div>

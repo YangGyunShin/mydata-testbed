@@ -21,11 +21,28 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        // 정적 리소스 허용
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/support/inquiry/**").authenticated()
-                        .requestMatchers("/intro/**", "/api-guide/**", "/support/**").permitAll()
-                        .requestMatchers("/member/login", "/member/signup/**", "/member/verify-email", "/member/resend-verification").permitAll()
+                        
+                        // H2 콘솔 허용 (개발용)
                         .requestMatchers("/h2-console/**").permitAll()
+                        
+                        // 회원 관련 (로그인, 회원가입) 허용
+                        .requestMatchers("/member/login", "/member/signup/**", "/member/verify-email", "/member/resend-verification").permitAll()
+                        
+                        // 소개, API 가이드 페이지 허용
+                        .requestMatchers("/intro/**", "/api-guide/**").permitAll()
+                        
+                        // 고객지원 - 인증 필요한 URL (구체적인 패턴 먼저!)
+                        .requestMatchers("/support/inquiry/**").authenticated()
+                        .requestMatchers("/support/board/write").authenticated()
+                        .requestMatchers("/support/board/*/edit").authenticated()
+                        .requestMatchers("/support/board/*/delete").authenticated()
+                        
+                        // 고객지원 - 나머지는 허용
+                        .requestMatchers("/support/**").permitAll()
+                        
+                        // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

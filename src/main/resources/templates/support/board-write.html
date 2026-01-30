@@ -21,7 +21,7 @@
     <!-- 서브 페이지 레이아웃 -->
     <div class="sub-page-layout">
         <!-- 사이드바 -->
-        <th:block th:replace="~{layout/sidebar :: sidebar(${menuTitle}, ${menuItems}, ${currentMenu})}"></th:block>
+        <th:block th:replace="~{layout/sidebar :: sidebar('고객지원', ${sidebarMenus}, ${currentMenu})}"></th:block>
 
         <!-- 메인 콘텐츠 -->
         <div class="sub-page-main">
@@ -32,6 +32,7 @@
 
             <!-- 작성 폼 -->
             <form th:action="${isEdit} ? @{/support/board/{id}/edit(id=${board.id})} : @{/support/board/write}" 
+                  th:object="${boardRequest}"
                   method="post" 
                   enctype="multipart/form-data"
                   class="board-form">
@@ -40,10 +41,9 @@
                     <label for="title" class="form-label required">제목</label>
                     <input type="text" 
                            id="title" 
-                           name="title" 
+                           th:field="*{title}" 
                            class="form-control" 
                            th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''"
-                           th:value="${boardRequest.title}"
                            placeholder="제목을 입력하세요"
                            maxlength="200"
                            required>
@@ -55,10 +55,9 @@
                 <div class="form-group">
                     <label for="content" class="form-label required">내용</label>
                     <textarea id="content" 
-                              name="content" 
+                              th:field="*{content}" 
                               class="form-control" 
                               th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''"
-                              th:text="${boardRequest.content}"
                               placeholder="내용을 입력하세요"
                               rows="15"
                               required></textarea>
@@ -68,7 +67,7 @@
                 </div>
 
                 <!-- 기존 첨부파일 표시 (수정 시) -->
-                <div class="form-group" th:if="${isEdit and board.hasAttachment()}">
+                <div class="form-group" th:if="${isEdit and board != null and board.hasAttachment}">
                     <label class="form-label">현재 첨부파일</label>
                     <div class="current-file">
                         <span class="file-info">
