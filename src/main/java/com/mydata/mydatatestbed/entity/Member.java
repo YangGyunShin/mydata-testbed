@@ -109,4 +109,8 @@ public class Member extends BaseTimeEntity {
     public void updateLastLoginAt() {
         this.lastLoginAt = LocalDateTime.now();
     }
+
+    public boolean isAdmin() {
+        return this.role == MemberRole.ROLE_ADMIN;
+    }
 }
