@@ -1,7 +1,7 @@
 # 📋 다음 세션 작업 가이드
 
-> **마지막 업데이트**: 2025-01-26  
-> **다음 작업**: Phase 3-5 자유게시판 (Board)
+> **마지막 업데이트**: 2025-01-31  
+> **다음 작업**: Phase 4 핵심 기능 (API 가이드, 테스트베드, 적합성 심사)
 
 ---
 
@@ -23,7 +23,7 @@
 | 3-2. FAQ | ✅ | 카테고리 필터, 아코디언 UI |
 | 3-3. 문의하기 (Inquiry) | ✅ | 작성, 목록, 상세 (인증 필요) |
 | 3-4. 자료실 (Resource) | ✅ | 목록/상세, 이전글/다음글, 다운로드 |
-| **3-5. 자유게시판 (Board)** | ⬜ | **다음 작업** |
+| 3-5. 자유게시판 (Board) | ✅ | CRUD, 파일 업로드/다운로드, 권한 체크 |
 
 ---
 
@@ -44,14 +44,15 @@
 | 규칙 | 설명 |
 |------|------|
 | ❌ **No Factory Method** | `of()`, `from()` 정적 팩토리 메서드 사용 금지 |
-| ❌ **No Setter** | Entity, ResponseDto에 Setter 금지 (RequestDto만 예외) |
+| ❌ **No Setter (Entity/ResponseDto)** | Entity, ResponseDto에 Setter 금지 |
+| ✅ **Setter (RequestDto)** | RequestDto에는 `@Setter` 필수 (폼 바인딩용) |
 | ✅ **Use Mapper** | DTO ↔ Entity 변환은 별도 Mapper 클래스 사용 |
 | ✅ **LAZY Loading** | `@ManyToOne`에 `fetch = FetchType.LAZY` 필수 |
 | ✅ **N+1 방지** | JOIN FETCH 쿼리 사용 |
 
 ---
 
-## 🔗 다음 작업: 자유게시판 (Board) URL 매핑
+## 🔗 완료된 Board 기능 URL 매핑
 
 | URL | Method | 인증 | 설명 |
 |-----|--------|------|------|
@@ -59,15 +60,14 @@
 | `/support/board/{id}` | GET | ❌ | 게시글 상세 (조회수 증가) |
 | `/support/board/write` | GET | ✅ | 글쓰기 폼 |
 | `/support/board/write` | POST | ✅ | 글 등록 |
-| `/support/board/{id}/edit` | GET | ✅ | 글 수정 폼 (작성자만) |
-| `/support/board/{id}/edit` | POST | ✅ | 글 수정 (작성자만) |
-| `/support/board/{id}/delete` | POST | ✅ | 글 삭제 (작성자만) |
+| `/support/board/{id}/edit` | GET | ✅ | 글 수정 폼 (작성자/관리자) |
+| `/support/board/{id}/edit` | POST | ✅ | 글 수정 (작성자/관리자) |
+| `/support/board/{id}/delete` | POST | ✅ | 글 삭제 (작성자/관리자) |
+| `/support/board/{id}/download` | GET | ❌ | 첨부파일 다운로드 |
 
 ---
 
-## 📂 생성할 파일 경로
-
-### 자유게시판 (Board)
+## 📂 Board 파일 구조 (완료)
 
 ```
 src/main/java/com/mydata/mydatatestbed/
@@ -76,21 +76,36 @@ src/main/java/com/mydata/mydatatestbed/
 ├── repository/
 │   └── BoardRepository.java
 ├── dto/board/
-│   ├── BoardRequestDto.java
+│   ├── BoardRequestDto.java          # @Setter 포함
 │   ├── BoardListResponseDto.java
-│   ├── BoardDetailResponseDto.java
-│   └── BoardNavDto.java
+│   └── BoardDetailResponseDto.java
 ├── mapper/
 │   └── BoardMapper.java
-└── service/
-    ├── BoardService.java
-    └── impl/BoardServiceImpl.java
+├── service/
+│   ├── BoardService.java
+│   ├── FileService.java
+│   └── impl/
+│       ├── BoardServiceImpl.java     # hasFile() 메서드 포함
+│       └── FileServiceImpl.java      # 절대 경로 사용
+└── util/
+    └── FileSizeFormatter.java
 
 src/main/resources/templates/support/
 ├── board-list.html
 ├── board-detail.html
-└── board-write.html
+└── board-write.html                  # 작성/수정 공용
 ```
+
+---
+
+## 🐛 해결된 트러블슈팅 요약
+
+| 문제 | 원인 | 해결 |
+|------|------|------|
+| 사이드바 미표시 | 템플릿 변수명 불일치 (`menuItems` vs `sidebarMenus`) | 하드코딩 `'고객지원'` + `${sidebarMenus}` 사용 |
+| 폼 바인딩 실패 | BoardRequestDto에 `@Setter` 누락 | `@Setter` 추가 |
+| 파일 저장 실패 | 상대 경로 사용 | `.toAbsolutePath().normalize()` 추가 |
+| 빈 파일 체크 실패 | `isEmpty()` 체크 불충분 | `hasFile()` 메서드로 강화 |
 
 ---
 
@@ -110,190 +125,158 @@ src/main/resources/templates/support/
 
 ---
 
-## 📚 코드 예시 (자료실 Resource - 최신 참고용)
+## 📚 주요 코드 패턴 (Board 구현 참고용)
 
-### Entity 예시 (Resource.java)
+### Entity - Board.java
 
 ```java
 @Entity
-@Table(name = "resources")
+@Table(name = "boards")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Resource extends BaseTimeEntity {
+public class Board extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
     @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    @Column(nullable = false)
-    private String filePath;
-
-    @Column(nullable = false)
-    private String fileName;
-
-    private Long fileSize;
-
-    @Column(nullable = false)
-    private int downloadCount = 0;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
 
     @Column(nullable = false)
     private int viewCount = 0;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Member author;
+    private String attachmentPath;
+    private String attachmentName;
+    private Long attachmentSize;
 
     @Builder
-    public Resource(String title, String description, String filePath, 
-                    String fileName, Long fileSize, Member author) {
+    public Board(Member member, String title, String content,
+                 String attachmentPath, String attachmentName, Long attachmentSize) {
+        this.member = member;
         this.title = title;
-        this.description = description;
-        this.filePath = filePath;
-        this.fileName = fileName;
-        this.fileSize = fileSize;
-        this.author = author;
+        this.content = content;
+        this.attachmentPath = attachmentPath;
+        this.attachmentName = attachmentName;
+        this.attachmentSize = attachmentSize;
     }
 
-    public void incrementDownloadCount() {
-        this.downloadCount++;
-    }
-
+    // 비즈니스 메서드
     public void incrementViewCount() {
         this.viewCount++;
     }
-}
-```
 
-### Repository 예시 (ResourceRepository.java)
-
-```java
-public interface ResourceRepository extends JpaRepository<Resource, Long> {
-
-    @Query("SELECT r FROM Resource r LEFT JOIN FETCH r.author WHERE r.id = :id")
-    Optional<Resource> findByIdWithAuthor(@Param("id") Long id);
-
-    @Query("SELECT r FROM Resource r WHERE " +
-           "(:keyword IS NULL OR :keyword = '' OR " +
-           "LOWER(r.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(r.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-           "ORDER BY r.createdAt DESC")
-    Page<Resource> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
-
-    // 다음 글 조회 (현재 글보다 최신)
-    @Query("SELECT r FROM Resource r WHERE r.id > :id ORDER BY r.id ASC LIMIT 1")
-    Optional<Resource> findNextResource(@Param("id") Long id);
-
-    // 이전 글 조회 (현재 글보다 이전)
-    @Query("SELECT r FROM Resource r WHERE r.id < :id ORDER BY r.id DESC LIMIT 1")
-    Optional<Resource> findPrevResource(@Param("id") Long id);
-}
-```
-
-### Mapper 예시 (ResourceMapper.java)
-
-```java
-@Component
-public class ResourceMapper {
-
-    public ResourceListResponseDto toListResponseDto(Resource resource) {
-        return ResourceListResponseDto.builder()
-                .id(resource.getId())
-                .title(resource.getTitle())
-                .createdAt(resource.getCreatedAt())
-                .build();
-    }
-
-    public ResourceDetailResponseDto toDetailResponseDto(Resource resource) {
-        return ResourceDetailResponseDto.builder()
-                .id(resource.getId())
-                .title(resource.getTitle())
-                .content(resource.getDescription())
-                .fileName(resource.getFileName())
-                .formattedFileSize(formatFileSize(resource.getFileSize()))
-                .viewCount(resource.getViewCount())
-                .downloadCount(resource.getDownloadCount())
-                .authorName(resource.getAuthor() != null ? resource.getAuthor().getName() : "관리자")
-                .createdAt(resource.getCreatedAt())
-                .build();
-    }
-
-    public ResourceNavDto toNavDto(Resource resource) {
-        return ResourceNavDto.builder()
-                .id(resource.getId())
-                .title(resource.getTitle())
-                .build();
-    }
-
-    private String formatFileSize(Long bytes) {
-        if (bytes == null || bytes == 0) return "0 B";
-        String[] units = {"B", "KB", "MB", "GB"};
-        int unitIndex = 0;
-        double size = bytes;
-        while (size >= 1024 && unitIndex < units.length - 1) {
-            size /= 1024;
-            unitIndex++;
+    public void update(String title, String content,
+                       String attachmentPath, String attachmentName, Long attachmentSize) {
+        this.title = title;
+        this.content = content;
+        if (attachmentPath != null) {
+            this.attachmentPath = attachmentPath;
+            this.attachmentName = attachmentName;
+            this.attachmentSize = attachmentSize;
         }
-        return String.format("%.1f %s", size, units[unitIndex]);
+    }
+
+    public void removeAttachment() {
+        this.attachmentPath = null;
+        this.attachmentName = null;
+        this.attachmentSize = null;
+    }
+
+    public boolean isAuthor(Long memberId) {
+        return this.member.getId().equals(memberId);
     }
 }
 ```
 
-### Controller 패턴 (SupportController - Resource 부분)
+### Service - 파일 체크 패턴
 
 ```java
-// ========================================
-// 자료실 (Resource)
-// ========================================
-
-@GetMapping("/resource")
-public String resourceList(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "") String keyword,
-        Model model) {
-
-    Page<ResourceListResponseDto> resources = 
-            resourceService.getResourceList(keyword, PageRequest.of(page, 10));
-
-    model.addAttribute("resources", resources);
-    model.addAttribute("keyword", keyword);
-    model.addAttribute("menuTitle", "고객지원");
-    model.addAttribute("menuItems", createSupportSidebarMenus());
-    model.addAttribute("currentMenu", "/support/resource");
-    model.addAttribute("breadcrumbItems", createResourceBreadcrumb());
-
-    return "support/resource-list";
-}
-
-@GetMapping("/resource/{id}")
-public String resourceDetail(@PathVariable Long id, Model model) {
-    ResourceDetailResponseDto resource = resourceService.getResourceDetail(id);
-    ResourceNavDto nextResource = resourceService.getNextResource(id);
-    ResourceNavDto prevResource = resourceService.getPrevResource(id);
-
-    model.addAttribute("resource", resource);
-    model.addAttribute("nextResource", nextResource);
-    model.addAttribute("prevResource", prevResource);
-    model.addAttribute("menuTitle", "고객지원");
-    model.addAttribute("menuItems", createSupportSidebarMenus());
-    model.addAttribute("currentMenu", "/support/resource");
-    model.addAttribute("breadcrumbItems", createResourceBreadcrumb());
-
-    return "support/resource-detail";
-}
-
-private List<Map<String, String>> createResourceBreadcrumb() {
-    return List.of(
-            Map.of("name", "고객지원", "url", "#"),
-            Map.of("name", "자료실", "url", "/support/resource")
-    );
+/**
+ * 파일 존재 여부를 안전하게 확인
+ * 
+ * 단순히 file != null && !file.isEmpty()만으로는 부족함
+ * - 브라우저에 따라 빈 파일도 isEmpty() = false일 수 있음
+ */
+private boolean hasFile(MultipartFile file) {
+    return file != null 
+            && !file.isEmpty() 
+            && file.getSize() > 0
+            && file.getOriginalFilename() != null 
+            && !file.getOriginalFilename().trim().isEmpty();
 }
 ```
+
+### FileService - 절대 경로 사용
+
+```java
+@Override
+public FileInfo saveFile(MultipartFile file, String subDir) {
+    try {
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename != null && originalFilename.contains(".")
+                ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+        String savedFilename = UUID.randomUUID() + extension;
+
+        // 핵심: 절대 경로로 변환
+        Path uploadPath = Paths.get(uploadDir, subDir).toAbsolutePath().normalize();
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(savedFilename);
+        file.transferTo(filePath.toFile());  // 절대 경로면 정상 동작
+
+        return new FileInfo(filePath.toString(), originalFilename, file.getSize());
+    } catch (IOException e) {
+        throw new RuntimeException("파일 저장에 실패했습니다: " + e.getMessage(), e);
+    }
+}
+```
+
+### Sidebar 템플릿 패턴
+
+```html
+<!-- 올바른 사이드바 호출 방식 -->
+<th:block th:replace="~{layout/sidebar :: sidebar('고객지원', ${sidebarMenus}, ${currentMenu})}"></th:block>
+```
+
+---
+
+## 📝 다음 작업: Phase 4 핵심 기능
+
+### Phase 4-1: API 가이드 페이지 ⬜
+
+| URL | 설명 |
+|-----|------|
+| `/api-guide` | API 가이드 메인 |
+| `/api-guide/auth` | 인증규격 |
+| `/api-guide/process` | 처리절차 |
+| `/api-guide/auth-api` | 마이데이터 인증 API 규격 |
+| `/api-guide/support-api` | 마이데이터 지원 API 규격 |
+| `/api-guide/info-api` | 마이데이터 정보제공 API 규격 |
+
+### Phase 4-2: 테스트베드 기능 ⬜
+
+| URL | 설명 |
+|-----|------|
+| `/testbed/service` | 마이데이터 서비스 테스트 |
+| `/testbed/api` | API 서버 테스트 |
+
+### Phase 4-3: 적합성 심사 ⬜
+
+| URL | 설명 |
+|-----|------|
+| `/conformance/functional` | 기능적합성 심사 |
+| `/conformance/security` | 보안취약점 결과 점검 |
 
 ---
 
@@ -310,20 +293,8 @@ private List<Map<String, String>> createResourceBreadcrumb() {
 
 ## 💬 다음 세션 시작하기
 
-**자유게시판(Board)** 구현을 시작합니다.
+**Phase 4 핵심 기능** 구현을 시작합니다.
 
-자료실(Resource) 패턴을 참고하여:
-1. 먼저 백엔드 코드 (Entity, Repository, DTO, Mapper, Service)를 제공해드립니다
-2. 그 다음 SupportController에 추가할 엔드포인트 코드를 제공해드립니다
-3. 마지막으로 HTML 템플릿을 생성합니다
-
-### Board 특징 (Resource와 차이점)
-
-| 항목 | Resource | Board |
-|------|----------|-------|
-| 글 작성 | 관리자만 | 로그인 사용자 |
-| 글 수정/삭제 | 관리자만 | 작성자 본인만 |
-| 첨부파일 | 필수 | 선택 |
-| 이전글/다음글 | ✅ | ✅ |
+Phase 4는 주로 정적 컨텐츠 페이지가 많으며, 실제 API 테스트 기능은 원본 사이트의 복잡한 로직을 단순화하여 구현할 예정입니다.
 
 감사합니다! 🙏

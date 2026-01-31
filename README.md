@@ -46,8 +46,9 @@ Password: (비워두기)
 | **FAQ** | 카테고리별 필터, 아코디언 UI | ✅ 완료 |
 | **문의하기** | 1:1 문의 작성, 내 문의 목록/상세 | ✅ 완료 |
 | **자료실** | 목록/상세, 이전글/다음글, 파일 다운로드 | ✅ 완료 |
-| **자유게시판** | 글쓰기, 목록, 상세, 수정/삭제 | ⏳ 진행 예정 |
+| **자유게시판** | CRUD, 파일 업로드/다운로드, 권한 체크 | ✅ 완료 |
 | **테스트베드** | API 테스트 환경 | ⏳ 예정 |
+| **적합성 심사** | 기능적합성/보안취약점 점검 | ⏳ 예정 |
 
 ---
 
@@ -79,12 +80,13 @@ Password: (비워두기)
 src/main/java/com/mydata/mydatatestbed/
 ├── config/          # SecurityConfig, WebConfig, AuditConfig
 ├── controller/      # MemberController, SupportController, MainController
-├── entity/          # Member, Notice, Faq, Inquiry, Resource + enums
+├── entity/          # Member, Notice, Faq, Inquiry, Resource, Board + enums
 ├── vo/              # Email, Password, Phone (Value Objects)
 ├── repository/      # JPA Repositories
 ├── dto/             # Request/Response DTOs
 ├── mapper/          # Entity ↔ DTO 변환
 ├── service/         # 비즈니스 로직 (인터페이스 + impl)
+├── util/            # FileSizeFormatter 등 유틸리티
 ├── security/        # CustomUserDetails, CustomUserDetailsService
 └── validation/      # 커스텀 검증 어노테이션
 
@@ -93,7 +95,7 @@ src/main/resources/
 │   ├── layout/      # 레이아웃 (header, footer, sidebar)
 │   ├── fragments/   # 공통 조각 (breadcrumb, pagination)
 │   ├── member/      # 회원 (로그인, 회원가입)
-│   └── support/     # 고객지원 (notice, faq, inquiry, resource)
+│   └── support/     # 고객지원 (notice, faq, inquiry, resource, board)
 ├── static/          # CSS, JS, Images
 ├── application.yml  # 설정
 └── data.sql         # 초기 데이터 (FAQ, Resource)
@@ -115,12 +117,30 @@ src/main/resources/
 | `/support/faq` | FAQ |
 | `/support/resource` | 자료실 목록 |
 | `/support/resource/{id}` | 자료실 상세 |
+| `/support/board` | 자유게시판 목록 |
+| `/support/board/{id}` | 자유게시판 상세 |
+| `/support/board/{id}/download` | 첨부파일 다운로드 |
 
 ### 인증 필요 URL
 
 | URL | 설명 |
 |-----|------|
 | `/support/inquiry` | 문의 작성/목록/상세 |
+| `/support/board/write` | 게시글 작성 |
+| `/support/board/{id}/edit` | 게시글 수정 (작성자/관리자) |
+| `/support/board/{id}/delete` | 게시글 삭제 (작성자/관리자) |
+
+---
+
+## 🎯 개발 진행률
+
+```
+Phase 1: 기본 구조      [██████████] 100% ✅
+Phase 2: 회원 기능      [██████████] 100% ✅
+Phase 3: 게시판 기능    [██████████] 100% ✅
+Phase 4: 핵심 기능      [░░░░░░░░░░]   0% ⏳
+Phase 5: 완성도         [░░░░░░░░░░]   0% ⏳
+```
 
 ---
 
