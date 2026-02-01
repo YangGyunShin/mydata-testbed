@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default-layout}">
+<head>
+    <title>데이터 표준 API 기본규격</title>
+    <th:block layout:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/sub-page.css}">
+        <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+        <link rel="stylesheet" th:href="@{/css/api-guide.css}">
+    </th:block>
+</head>
+<body>
+<main layout:fragment="content">
+    <!-- 페이지 배너 -->
+    <th:block th:replace="~{fragments/page-banner :: page-banner('API가이드', '금융분야 마이데이터 표준 API 규격을 안내합니다')}"></th:block>
+
+    <!-- 브레드크럼 -->
+    <th:block th:replace="~{fragments/breadcrumb :: breadcrumb(${breadcrumbItems})}"></th:block>
+
+    <!-- 서브 페이지 레이아웃 -->
+    <div class="sub-page-layout">
+        <!-- 사이드바 -->
+        <th:block th:replace="~{layout/sidebar :: sidebar('API가이드', ${sidebarMenus}, ${currentMenu})}"></th:block>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="sub-page-main">
+            <h2 class="content-title">데이터 표준 API 기본규격</h2>
+
+            <!-- ==================== 1. 기본 규격 ==================== -->
+            <h3 class="spec-section-title">1. 기본 규격</h3>
+
+            <!-- 1) 데이터 표현규격 -->
+            <h4 class="spec-subsection-title">1) 데이터 표현규격</h4>
+
+            <!-- JSON -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>JSON:</strong> 데이터를 교환하기 위한 API의 메시지 형식은 <strong>JSON *</strong> 방식을 사용함
+                </p>
+                <div class="spec-term-box">
+                    <p class="spec-term-name">* JSON(JavaScript Object Notation)</p>
+                    <p class="spec-term-desc">
+                        용량이 적은 메시지를 송수신하기 위해 데이터 객체를 속성·값(Key:Value) 형식으로 표현하는 개방형 표준 메시지 형식
+                    </p>
+                </div>
+            </div>
+
+            <!-- 메시지 인코딩 방식 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>메시지 인코딩 방식 :</strong> 메시지 전송을 위한 인코딩 방식은 <strong>UTF-8 *</strong> 을 사용함
+                </p>
+                <div class="spec-term-box">
+                    <p class="spec-term-name">* UTF-8</p>
+                    <p class="spec-term-desc">
+                        ASCII 코드를 확장하여 전 세계의 모든 문자코드를 표현할 수 있는 표준 인코딩 방식으로써, 범용성이 높아 호환성이 우수
+                    </p>
+                </div>
+            </div>
+
+            <!-- 명명 규칙 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>명명 규칙 :</strong> API 명세 내 URI와 파라미터의 명명으로 'Under Scores'표기법(각 소문자 영단어가 밑줄 문자(_)로 연결)을 사용함
+                </p>
+                <p class="spec-note">
+                    ※ 단, OAuth 2.0과 같이 타 표준에서 요구하는 URI나 파라미터 명명 규칙 등이 존재하는 경우 해당 표준을 우선 준용함
+                </p>
+            </div>
+
+            <!-- 통화코드 표현 형식 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>통화코드 표현 형식 :</strong> 통화코드 표현은 ISO 4217을 사용함
+                </p>
+                <p class="spec-note">※ 예시 : KRW - 한국원화</p>
+            </div>
+
+            <hr class="spec-divider">
+
+            <!-- 2) 데이터 통신규격 -->
+            <h4 class="spec-subsection-title">2) 데이터 통신규격</h4>
+
+            <!-- 네트워크 구간 보호 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>네트워크 구간 보호 :</strong> 참여주체(정보 제공자, 마이데이터사업자, 종합포털, 통합인증기관) 간 안전한 통신을 위한 보호 방안으로, <strong>TLS *</strong> 기반 상호인증 (Mutual Authentication) 및 전송구간 암호화를 사용
+                </p>
+                <div class="spec-term-box">
+                    <p class="spec-term-name">* TLS (Transport Layer Security)</p>
+                    <ul class="spec-term-desc">
+                        <li>전송(Transport) 계층과 응용(Application) 계층 사이에서 종단 간 인증, 전송 데이터의 암호화, 무결성을 보장하는 표준 프로토콜</li>
+                        <li>안전한 전송을 위해 TLS 1.3이상 버전 사용</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 메시지 교환 방식 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>메시지 교환 방식 :</strong> API 요청 및 응답(메시지) 교환방식은 <strong>REST *</strong> 방식을 사용함
+                </p>
+                <div class="spec-term-box">
+                    <p class="spec-term-name">* REST (REpresentational State Transfer)</p>
+                    <ul class="spec-term-desc">
+                        <li>HTTP 기반으로 데이터를 전달하는 프레임워크로써, URI로 정보의 자원을 표현하고 자원에 대한 행위를 HTTP 메소드(GET, POST 등)로 표현</li>
+                        <li>다만, 보안상 이유로 HTTP 메소드 중 GET, POST만 제한적 이용</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- URI 계층 구조 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>URI 계층 구조 :</strong> 업권별 웹서버 상의 자원(리소스)을 고유하게 식별하고, 위치를 지정할 수 있도록 URI 계층 구조는 다음과 같이 구성
+                </p>
+
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">분류</th>
+                            <th>URI 계층 구조</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>OAuth 2.0 관련 API<br><small>(인증 API, 지원 API 일부)</small></td>
+                            <td class="left"><code><strong>&lt;base path&gt;</strong> * / oauth / 2.0 / [authorize | token | revoke]</code></td>
+                        </tr>
+                        <tr>
+                            <td>업권별 정보제공 API</td>
+                            <td class="left"><code>&lt;base path&gt; / <strong>&lt;version&gt;</strong> * / <strong>&lt;industry&gt;</strong> * / &lt;resource&gt;</code></td>
+                        </tr>
+                        <tr>
+                            <td>지원 API</td>
+                            <td class="left"><code>&lt;base path&gt; / &lt;version&gt; / &lt;resource&gt;</code></td>
+                        </tr>
+                        <tr>
+                            <td>통합인증 API</td>
+                            <td class="left"><code>&lt;base path&gt; / &lt;version&gt; / &lt;resource&gt;</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- URI 파라미터 설명 -->
+                <div class="spec-uri-info">
+                    <p>
+                        <span class="param-name">* &lt;base path&gt;</span> : 정보 제공자의 API서버 도메인명(또는 IP)로써 종합포털에 기관정보와 함께 등록한 정보<br>
+                        금융회사가 마이데이터사업자 허가를 받는 경우, 금융회사가 정보제공을 위해 사용하는 도메인(예:base path #1)과 마이데이터사업자로서 정보 제공을 위해 사용하는 도메인(예:base path #2)을 구분
+                    </p>
+                    <p style="margin-top: 12px;">
+                        <span class="param-name">* &lt;version&gt;</span> : 표준API 규격 버전정보로써 "v"+숫자로 표기(예: v1, v34 등)
+                    </p>
+                    <p style="margin-top: 12px;">
+                        <span class="param-name">* &lt;industry&gt;</span> : 업권 정보<br>
+                        업권을 URI로 구분하고, 업권 간 URI 중복을 방지하기 위해 &lt;industry&gt;로 구분<br>
+                        지원 API는 종합포털과 마이데이터사업자/정보제공자 간 이용되는 API 이기 때문에 &lt;industry&gt; 불필요
+                    </p>
+                </div>
+
+                <!-- 업권별 industry 값 테이블 -->
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">업권</th>
+                            <th>&lt;industry&gt;값</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>은행</td><td>bank</td></tr>
+                        <tr><td>카드</td><td>card</td></tr>
+                        <tr><td>금융투자</td><td>invest</td></tr>
+                        <tr><td>보험</td><td>insu</td></tr>
+                        <tr><td>전자금융</td><td>efin</td></tr>
+                        <tr><td>할부금융</td><td>capital</td></tr>
+                        <tr><td>보증보험 (서울보증보험)</td><td>ginsu</td></tr>
+                        <tr><td>통신</td><td>telecom</td></tr>
+                        <tr><td>P2P</td><td>p2p</td></tr>
+                        <tr><td>인수채권<br><small>(한국자산관리공사, 국민행복기금, 케이알앤씨, 농협자산관리회사 등 채권인수회사)</small></td><td>bond</td></tr>
+                        <tr><td>대부<br><small>(금전대부업자, 매입추심업자)</small></td><td>usury</td></tr>
+                    </tbody>
+                </table>
+
+                <p class="spec-item-desc">
+                    업권이 복수 개인 기관(예:겸영여신업자 등)의 경우, 종합포털로 부터 업권별 기관코드가 각각 발급되며, 따라서 종합포털에 기관 등록 시 업권 수만큼 복수 개의 기관 등록 필요
+                </p>
+                <p class="spec-note">
+                    즉, 기관 별 &lt;industry&gt;는 1:1 관계 (한 기관이 복수 개의 &lt;industry&gt;를 가질 수 없음)
+                </p>
+
+                <div class="spec-uri-info" style="margin-top: 16px;">
+                    <p>
+                        <span class="param-name">* &lt;resource&gt;</span> : 정보제공자가 보유하고 있는 특정 자원을 요청하기 위한 식별 정보러써, 정보제공자가 제공해야 할 API를 특정<br>
+                        API 명세(제5장 ~ 제7장) 내 "API 명 (URI)"는 &lt;resource&gt;만을 표기하였으며, 따라서 실제 URI는 &lt;version&gt;, &lt;industry&gt;등을 포함 (상세 URI는 제4장 참조)
+                    </p>
+                </div>
+
+                <!-- URI 예시 -->
+                <div class="spec-example-box">
+                    <h5 class="spec-example-title">URI 예시</h5>
+
+                    <div class="spec-example-item">
+                        <p><span class="example-num">1.</span> A 은행이 제공해야 하는 "업권별 정보제공 API" 목록 :</p>
+                        <code>&lt;base path&gt; / &lt;version&gt; / <span class="uri-highlight">bank</span> / &lt;resource&gt;</code>
+                    </div>
+
+                    <div class="spec-example-item">
+                        <p><span class="example-num">2.</span> B 전자금융업자가 제공해야 하는 "업권별 정보제공 API" 목록 :</p>
+                        <code>&lt;base path&gt; / &lt;version&gt; / <span class="uri-highlight">efin</span> / &lt;resource&gt;</code>
+                    </div>
+
+                    <div class="spec-example-item">
+                        <p><span class="example-num">3.</span> 은행업, 카드업 모두 수행하는 C기관이 제공해야 하는 "업권별 정보제공 API" 목록 :</p>
+                        <code>
+                            <strong>&lt;base path #1&gt;</strong> / &lt;version&gt; / <span class="uri-highlight">bank</span> / &lt;resource&gt;<br>
+                            <strong>&lt;base path #2&gt;</strong> / &lt;version&gt; / <span class="uri-highlight">card</span> / &lt;resource&gt;
+                        </code>
+                        <p class="spec-example-note">* C기관(은행업)의 기관코드와 C기관(카드업)의 기관코드는 상이</p>
+                    </div>
+
+                    <p class="spec-note">※ 예시1~3 모두, 인증 API 및 지원 API는 &lt;base path&gt; 별로 제공</p>
+                </div>
+            </div>
+
+            <hr class="spec-divider">
+
+            <!-- HTTP 헤더 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>HTTP 헤더 :</strong> 표준 API에 지원되는 HTTP 헤더를 다음과 같이 지정
+                </p>
+
+                <!-- Content-Type -->
+                <div class="spec-term-box">
+                    <p class="spec-term-name">Content-Type</p>
+                    <p class="spec-term-desc" style="margin-bottom: 12px;">
+                        데이터(Body)의 포맷을 지정하기 위한 헤더 값으로 필요에 따라 application/x-www-form-urlencoded, 또는 application/json으로 지정
+                    </p>
+
+                    <table class="spec-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">구분</th>
+                                <th style="width: 40%;">구분</th>
+                                <th>헤더 값 지정</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2">요청<br>(Request)</td>
+                                <td>OAuth 2.0 관련 API 호출 시</td>
+                                <td>application/x-www-form-urlencoded</td>
+                            </tr>
+                            <tr>
+                                <td>JSON 형식으로 데이터 전송 시</td>
+                                <td>application/json</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">응답<br>(Response)</td>
+                                <td>OAuth 2.0 인가코드 발급요청 API 호출 시</td>
+                                <td>application/x-www-form-urlencoded</td>
+                            </tr>
+                            <tr>
+                                <td>JSON 형식으로 데이터 전송 시</td>
+                                <td>application/json</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- x-api-type -->
+                <div class="spec-term-box" style="margin-top: 16px;">
+                    <p class="spec-term-name">x-api-type</p>
+                    <p class="spec-term-desc" style="margin-bottom: 8px;">
+                        정보주체의 개입 없이 마이데이터사업자가 정기적 전송을 위해 호출한 API인지 여부를 구분하기 위한 헤더 값 (정보주체가 직접 개입 하여 API를 호출하는 경우 본 헤더 정보는 생략)
+                    </p>
+                    <p class="spec-note" style="margin-bottom: 12px;">
+                        * 예시 : 사용자가 마이데이터사업자 앱에 접속하여 "조회" 등 버튼 클릭 시 API 호출
+                    </p>
+
+                    <table class="spec-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">분류</th>
+                                <th style="width: 40%;">조건</th>
+                                <th>헤더 값 지정</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2">요청<br>(Request)</td>
+                                <td>정기적 전송 시</td>
+                                <td>"x-api-type : scheduled"</td>
+                            </tr>
+                            <tr>
+                                <td>비정기적 전송 시</td>
+                                <td>생략</td>
+                            </tr>
+                            <tr>
+                                <td>응답<br>(Response)</td>
+                                <td>해당없음</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr class="spec-divider">
+
+            <!-- 응답코드 및 메시지 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>응답코드 및 메시지 :</strong> 기본적인 HTTP 응답코드는 정상응답 여부 및 주요한 에러를 범주로 처리하는 등 각 API 처리상황의 상세한 판단이 불가능 하므로, 세부 응답코드 및 메시지를 사용함 ([별첨1] 참조)
+                </p>
+                <div class="spec-term-box">
+                    <p class="spec-term-name">OAuth 2.0 관련 API</p>
+                    <p class="spec-term-desc">- RFC 6479 및 7009 국제표준 준용</p>
+                    <p class="spec-term-name" style="margin-top: 12px;">그 외</p>
+                    <p class="spec-term-desc">- 세부 응답코드와 메시지는 응답 본문 내 'rsp_code', 'rsp_msg' 필드에 포함하여 반환</p>
+                </div>
+            </div>
+
+            <hr class="spec-divider">
+
+            <!-- 페이지네이션, 부분범위 조회 -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>페이지네이션, 부분범위 조회 :</strong> 정보의 목록을 반환하는 API(거래내역 조회 등)에는 부분범위 조회를 위한 'Cursor-Based Pagination' 기법을 적용하여 데이터수신자의 처리 효율성과 정보 제공자의 부하를 경감함
+                </p>
+
+                <div class="spec-term-box">
+                    <p class="spec-term-name">부분범위 조회 요청/응답 파라미터 규격</p>
+                    <table class="spec-table" style="margin-top: 12px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 12%;">구분</th>
+                                <th style="width: 18%;">이름</th>
+                                <th style="width: 15%;">타입 (길이)</th>
+                                <th>설명</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2">요청</td>
+                                <td>limit</td>
+                                <td>N (3)</td>
+                                <td class="left">기준개체 이후 반환될 개체의 개수 (최대 500자까지 설정 가능)</td>
+                            </tr>
+                            <tr>
+                                <td>next_page*</td>
+                                <td>aN (1000)</td>
+                                <td class="left">다음 페이지 요청을 위한 기준개체 (설정 시 해당 개체를 포함한 limit 개 반환)</td>
+                            </tr>
+                            <tr>
+                                <td>응답<br>(JSON 응답)</td>
+                                <td>next_page*</td>
+                                <td>aN (1000)</td>
+                                <td class="left">다음 페이지 요청을 위한 기준개체 (다음 페이지 존재하지 않는 경우 미회신)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="spec-note" style="margin-top: 8px;">
+                        * 기준개체 식별자의 생성규칙은 정보제공자가 자율적으로 정함.
+                    </p>
+                </div>
+            </div>
+
+            <hr class="spec-divider">
+
+            <!-- 부하개선을 위한 조회 Timestamp -->
+            <div class="spec-item">
+                <p class="spec-item-title">
+                    <strong>부하개선을 위한 조회 Timestamp :</strong> 마이데이터사업자가 정보를 수집한 이후 동일한 정보에 대해 정기전송 요청 시 정보 제공자의 정보가 수정사항이 없을 경우 조회 Timestamp를 이용하여 전송을 최소화
+                </p>
+
+                <div class="spec-term-box">
+                    <p class="spec-term-desc">정보제공자는 조회 Timestamp 기능을 의무적으로 구현할 필요없음(선택사항)</p>
+                </div>
+
+                <!-- Timestamp 다이어그램 (이미지 placeholder) -->
+                <div class="spec-image-container">
+                    <div class="spec-image-placeholder">
+                        <p style="font-weight: 600; margin-bottom: 8px;">예시 : Timestamp를 이용한 부하개선</p>
+                        <p>[정보수신자] ↔ [정보제공자] 간 Timestamp 기반 조회 시퀀스 다이어그램</p>
+                        <p style="margin-top: 8px; font-size: 0.8125rem; color: #999;">
+                            (원본 사이트의 시퀀스 다이어그램 이미지 위치)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timestamp 시나리오 1~9 -->
+                <div class="spec-scenario">
+                    <div class="spec-scenario-step">
+                        <span class="step-label">1. (정보수신자)</span> 최초로 API 호출 (본 예시는 "계좌 기본정보 조회"(가칭) API를 호출 시 시나리오)
+                        <span class="step-detail">- ST(조회 timestamp)=0</span>
+                    </div>
+
+                    <div class="spec-scenario-step">
+                        <span class="step-label">2. (정보제공자)</span> ST와 MT(가장 최근에 DB갱신된 시간)를 비교
+                        <span class="step-detail">- ST(0) &lt; MT(40)이므로, DB를 조회하여 정보를 정보수신자에게 전달</span>
+                        <span class="step-detail">- 이때 정보수신자가 조회한 시간(current time)을 함께 회신 (예시에서는 현재시각을 100이라 가정)</span>
+                    </div>
+
+                    <div class="spec-scenario-step">
+                        <span class="step-label">3. (정보수신자)</span> 전달받은 정보 및 조회기준시점(100)을 DB에 반영
+                    </div>
+
+                    <div class="spec-scenario-step">
+                        <span class="step-label">4. (정보수신자)</span> 정기적 전송을 위해 정보수신자가 동일한 API를 호출
+                        <span class="step-detail">- DB에 저장되어 있는 ST(100)을 함께 정보제공자에게 전달</span>
+                    </div>
+
+                    <div class="spec-scenario-step">
+                        <span class="step-label">5. (정보제공자)</span> 그 사이에 정보제공자의 DB가 변경된 적이 없으므로(MT=40), UP_TO_DATE 회신
+                    </div>
+
+                    <div class="spec-scenario-step">
+                        <span class="step-label">6. (정보제공자)</span> 계좌 기본정보가 갱신될 경우, MT도 UPDATE 시점의 시간(예시에서는 UPDATE 시점의 현재시각을 150이라 가정)도 갱신
+                    </div>
+
+                    <div class="spec-scenario-step">
+                        <span class="step-label">7. (정보수신자)</span> 정기적 전송을 위해 정보수신자가 동일한 API를 호출
+                        <span class="step-detail">- DB에 저장되어 있는 ST(100)을 함께 정보제공자에게 전달</span>
+                    </div>
+
+                    <div class="spec-scenario-step">
+                        <span class="step-label">8. (정보제공자)</span> ST와 MT(가장 최근에 DB갱신된 시간=150)를 비교
+                        <span class="step-detail">- ST(100) &lt; MT(150)이므로, DB를 조회하여 정보를 정보수신자에게 전달</span>
+                        <span class="step-detail">- 이때 정보수신자가 조회한 시간(current time)을 함께 회신 (예시에서는 현재시각을 200이라 가정)</span>
+                    </div>
+
+                    <div class="spec-scenario-step">
+                        <span class="step-label">9. (정보수신자)</span> 전달받은 정보 및 조회기준시점(200)을 DB에 반영
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+</body>
+</html>

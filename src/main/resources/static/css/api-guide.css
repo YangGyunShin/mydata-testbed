@@ -1,0 +1,316 @@
+/* ===========================
+   api-guide.css - API 가이드 페이지 스타일
+   =========================== */
+
+/* 섹션 제목 (1. 기본 규격) */
+.spec-section-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #0d6efd;
+    margin-top: 40px;
+    margin-bottom: 24px;
+}
+
+.spec-section-title:first-child {
+    margin-top: 0;
+}
+
+/* 소제목 (1) 데이터 표현규격) */
+.spec-subsection-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #333;
+    margin-top: 32px;
+    margin-bottom: 20px;
+}
+
+/* 항목 리스트 (bullet point 항목들) */
+.spec-item {
+    margin-bottom: 24px;
+}
+
+.spec-item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.spec-item-title strong {
+    color: #1e3a5f;
+}
+
+.spec-item-desc {
+    font-size: 0.9375rem;
+    color: #495057;
+    line-height: 1.7;
+    margin-bottom: 4px;
+}
+
+/* 설명 박스 (용어 설명) */
+.spec-term-box {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+}
+
+.spec-term-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-bottom: 8px;
+}
+
+.spec-term-desc {
+    font-size: 0.875rem;
+    color: #6c757d;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.spec-term-desc li {
+    margin-bottom: 4px;
+}
+
+/* 참고 (※) 텍스트 */
+.spec-note {
+    font-size: 0.875rem;
+    color: #0d6efd;
+    margin-top: 8px;
+    line-height: 1.6;
+}
+
+/* 테이블 스타일 */
+.spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px 0;
+    font-size: 0.9375rem;
+}
+
+.spec-table th,
+.spec-table td {
+    padding: 12px 16px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.spec-table thead th {
+    background-color: #1e3a5f;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.spec-table tbody td {
+    color: #333;
+}
+
+.spec-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.spec-table tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+.spec-table td.left {
+    text-align: left;
+}
+
+.spec-table .highlight-text {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+/* URI 구조 테이블의 코드 스타일 */
+.spec-table code {
+    background-color: transparent;
+    color: #333;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.875rem;
+}
+
+.spec-table code strong {
+    color: #0d6efd;
+    font-weight: 700;
+}
+
+/* URI 설명 박스 */
+.spec-uri-info {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 16px 0 24px 0;
+    font-size: 0.9375rem;
+    line-height: 1.8;
+    color: #495057;
+}
+
+.spec-uri-info .param-name {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+/* URI 예시 박스 */
+.spec-example-box {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-left: 4px solid #0d6efd;
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin: 16px 0 24px 0;
+}
+
+.spec-example-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+}
+
+.spec-example-item {
+    margin-bottom: 16px;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: #333;
+}
+
+.spec-example-item:last-child {
+    margin-bottom: 0;
+}
+
+.spec-example-item .example-num {
+    font-weight: 600;
+    color: #1e3a5f;
+}
+
+.spec-example-item code {
+    display: block;
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    margin-top: 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.875rem;
+    color: #333;
+}
+
+.spec-example-item code .uri-highlight {
+    color: #0d6efd;
+    font-weight: 700;
+}
+
+.spec-example-note {
+    font-size: 0.875rem;
+    color: #dc3545;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* Timestamp 시나리오 단계 */
+.spec-scenario {
+    margin: 16px 0;
+}
+
+.spec-scenario-step {
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border-left: 3px solid #dee2e6;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: #333;
+}
+
+.spec-scenario-step:nth-child(odd) {
+    border-left-color: #0d6efd;
+}
+
+.spec-scenario-step:nth-child(even) {
+    border-left-color: #198754;
+}
+
+.spec-scenario-step .step-label {
+    font-weight: 600;
+    color: #1e3a5f;
+}
+
+.spec-scenario-step .step-detail {
+    display: block;
+    padding-left: 16px;
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+/* 이미지 컨테이너 */
+.spec-image-container {
+    margin: 24px 0;
+    padding: 24px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.spec-image-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+.spec-image-placeholder {
+    padding: 40px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    color: #6c757d;
+    font-size: 0.9375rem;
+    text-align: center;
+}
+
+/* 구분선 */
+.spec-divider {
+    border: none;
+    border-top: 1px dashed #dee2e6;
+    margin: 32px 0;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .spec-section-title {
+        font-size: 1.25rem;
+        margin-top: 32px;
+    }
+
+    .spec-subsection-title {
+        font-size: 1rem;
+    }
+
+    .spec-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .spec-table th,
+    .spec-table td {
+        padding: 10px 12px;
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
+
+    .spec-term-box,
+    .spec-uri-info,
+    .spec-example-box {
+        padding: 16px;
+    }
+
+    .spec-example-item code {
+        font-size: 0.8125rem;
+        overflow-x: auto;
+    }
+}
