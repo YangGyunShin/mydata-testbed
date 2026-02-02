@@ -20,8 +20,8 @@
 
     <!-- 서브 페이지 레이아웃 -->
     <div class="sub-page-layout">
-        <!-- 사이드바 -->
-        <th:block th:replace="~{layout/sidebar :: sidebar('마이데이터 인증 API 규격', ${sidebarMenus}, ${currentMenu})}"></th:block>
+        <!-- 사이드바 (아코디언) -->
+        <th:block th:replace="~{layout/sidebar-api-spec :: sidebar-api-spec(${activeGroup}, ${currentMenu})}"></th:block>
 
         <!-- 메인 콘텐츠 -->
         <div class="sub-page-main">

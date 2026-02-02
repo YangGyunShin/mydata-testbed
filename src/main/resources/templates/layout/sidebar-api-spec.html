@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+    API 규격 섹션용 아코디언 사이드바
+    - activeGroup: 현재 활성 그룹 ('cert', 'support', 'info')
+    - currentMenu: 현재 활성 메뉴 URL
+-->
+<th:block th:fragment="sidebar-api-spec(activeGroup, currentMenu)">
+<aside class="sidebar sidebar-accordion">
+    <!-- API가이드 상위 링크 -->
+    <a th:href="@{/api-guide}" class="sidebar-back-link">API가이드</a>
+
+    <!-- 마이데이터 인증 API 규격 -->
+    <div class="sidebar-group" th:classappend="${activeGroup == 'cert'} ? ' active' : ''">
+        <a th:href="@{/cert-api}" class="sidebar-group-title">마이데이터 인증 API 규격</a>
+        <ul class="sidebar-group-menu" th:if="${activeGroup == 'cert'}">
+            <li th:classappend="${currentMenu == '/cert-api/individual'} ? ' active' : ''">
+                <a th:href="@{/cert-api/individual}">개별인증 API</a>
+            </li>
+            <li th:classappend="${currentMenu == '/cert-api/integrated'} ? ' active' : ''">
+                <a th:href="@{/cert-api/integrated}">통합인증 API</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 마이데이터 지원 API 규격 -->
+    <div class="sidebar-group" th:classappend="${activeGroup == 'support'} ? ' active' : ''">
+        <a th:href="@{/support-api}" class="sidebar-group-title">마이데이터 지원 API 규격</a>
+        <!--
+        <ul class="sidebar-group-menu" th:if="${activeGroup == 'support'}">
+            <li><a th:href="@{/support-api/...}">하위 메뉴</a></li>
+        </ul>
+        -->
+    </div>
+
+    <!-- 마이데이터 정보제공 API 규격 -->
+    <div class="sidebar-group" th:classappend="${activeGroup == 'info'} ? ' active' : ''">
+        <a th:href="@{/info-api}" class="sidebar-group-title">마이데이터 정보제공 API 규격</a>
+        <!--
+        <ul class="sidebar-group-menu" th:if="${activeGroup == 'info'}">
+            <li><a th:href="@{/info-api/...}">하위 메뉴</a></li>
+        </ul>
+        -->
+    </div>
+</aside>
+</th:block>
+</html>
