@@ -158,11 +158,12 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    background-color: #fff;
+    background-color: #eef3f9;
+    border-left: 3px solid #0d6efd;
 }
 
 .sidebar-group-menu li {
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #dce5ef;
 }
 
 .sidebar-group-menu li:last-child {
@@ -175,6 +176,7 @@
     font-size: 0.9375rem;
     color: #495057;
     text-decoration: none;
+    background-color: #eef3f9;
     transition: all 0.2s;
 }
 
