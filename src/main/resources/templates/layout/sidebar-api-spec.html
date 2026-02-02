@@ -2,13 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!--
     API 규격 섹션용 아코디언 사이드바
-    - activeGroup: 현재 활성 그룹 ('cert', 'support', 'info')
+    - activeGroup: 현재 활성 그룹 ('api-guide', 'cert', 'support', 'info')
     - currentMenu: 현재 활성 메뉴 URL
 -->
 <th:block th:fragment="sidebar-api-spec(activeGroup, currentMenu)">
 <aside class="sidebar sidebar-accordion">
-    <!-- API가이드 상위 링크 -->
-    <a th:href="@{/api-guide}" class="sidebar-back-link">API가이드</a>
+
+    <!-- API가이드 (데이터 표준 API) -->
+    <div class="sidebar-group" th:classappend="${activeGroup == 'api-guide'} ? ' active' : ''">
+        <a th:href="@{/api-guide}" class="sidebar-group-title">API가이드</a>
+        <ul class="sidebar-group-menu" th:if="${activeGroup == 'api-guide'}">
+            <li th:classappend="${currentMenu == '/api-guide/base'} ? ' active' : ''">
+                <a th:href="@{/api-guide/base}">데이터 표준 API 기본규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/api-guide/auth'} ? ' active' : ''">
+                <a th:href="@{/api-guide/auth}">데이터 표준 API 인증규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/api-guide/process'} ? ' active' : ''">
+                <a th:href="@{/api-guide/process}">마이데이터 참여자별 API 처리 절차</a>
+            </li>
+        </ul>
+    </div>
 
     <!-- 마이데이터 인증 API 규격 -->
     <div class="sidebar-group" th:classappend="${activeGroup == 'cert'} ? ' active' : ''">
