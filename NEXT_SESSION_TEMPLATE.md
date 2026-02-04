@@ -1,7 +1,7 @@
 # 📋 다음 세션 작업 가이드
 
-> **마지막 업데이트**: 2026-02-02  
-> **다음 작업**: Phase 4-1 계속 - 마이데이터 지원 API 규격
+> **마지막 업데이트**: 2026-02-03  
+> **다음 작업**: Phase 4-1 계속 - 마이데이터 정보제공 API 규격
 
 ---
 
@@ -24,7 +24,8 @@
 | Phase 3: 게시판 기능 | ✅ | 공지사항, FAQ, 문의, 자료실, 자유게시판 |
 | Phase 4-1: 데이터 표준 API | ✅ | 기본규격, 인증규격, 참여자별 처리절차 |
 | Phase 4-1: 마이데이터 인증 API 규격 | ✅ | 개별인증 API (4개), 통합인증 API (9개) |
-| Phase 4-1: 마이데이터 지원 API 규격 | ⬜ | **다음 작업** |
+| Phase 4-1: 마이데이터 지원 API 규격 | ✅ | 종합포털 제공 (14개), 사업자/정보제공자 제공 (4개) |
+| Phase 4-1: 마이데이터 정보제공 API 규격 | ⬜ | **다음 작업** |
 
 ---
 
@@ -62,16 +63,26 @@
 
 ---
 
-## 🎯 다음 작업: 마이데이터 지원 API 규격
+## 🎯 다음 작업: 마이데이터 정보제공 API 규격
 
 ### 핵심 구조
 
-원본 사이트 스크린샷에서 확인한 사이드바 하위 메뉴:
+원본 사이트의 사이드바 하위 메뉴 구조:
 ```
-마이데이터 지원 API 규격 (activeGroup='support')
-├── 지원 API(종합포털 제공)
-└── 지원 API(마이데이터사업자/정보제공자 제공)
+마이데이터 정보제공 API 규격 (activeGroup='info')
+├── 은행
+├── 보험
+├── 금융투자
+├── 전자금융
+├── 카드
+├── 통신
+├── 보증보험
+├── P2P
+├── 공공
+└── ... (스캔 후 확인 필요)
 ```
+
+> ⚠️ **원본 사이트 스캔 필요**: 하위 메뉴 구성과 각 업종별 API 스펙 내용은 원본 사이트에서 확인해야 합니다.
 
 ### 아코디언 사이드바 구조 (이미 구현됨)
 
@@ -86,21 +97,39 @@ API가이드                          (activeGroup='guide')  ✅ 완료
 ├── 개별인증 API
 └── 통합인증 API
 
-마이데이터 지원 API 규격            (activeGroup='support') ⬜ 다음 작업
+마이데이터 지원 API 규격            (activeGroup='support') ✅ 완료
 ├── 지원 API(종합포털 제공)
 └── 지원 API(마이데이터사업자/정보제공자 제공)
 
-마이데이터 정보제공 API 규격        (activeGroup='info')   ⬜ 예정
+마이데이터 정보제공 API 규격        (activeGroup='info')   ⬜ 다음 작업
 └── (스캔 필요)
 ```
 
 ### 작업 절차
 
 #### 1단계: 원본 사이트 스캔
-- 원본 URL에서 "마이데이터 지원 API 규격" 섹션 내용 스캔
+- 원본 URL에서 "마이데이터 정보제공 API 규격" 섹션 내용 스캔
+- 사이드바 하위 메뉴 구조 파악 (업종별 분류)
 - 각 하위 페이지의 API 스펙 데이터 추출
 
-#### 2단계: SupportApiController.java 생성 (사용자가 생성)
+#### 2단계: sidebar-api-spec.html 수정
+정보제공 API 하위 메뉴 추가 (현재 주석 처리 상태):
+
+```html
+<!-- 마이데이터 정보제공 API 규격 -->
+<div class="sidebar-group" th:classappend="${activeGroup == 'info'} ? ' active' : ''">
+    <a th:href="@{/info-api}" class="sidebar-group-title">마이데이터 정보제공 API 규격</a>
+    <ul class="sidebar-group-menu" th:if="${activeGroup == 'info'}">
+        <!-- 스캔 후 하위 메뉴 추가 -->
+        <li th:classappend="${currentMenu == '/info-api/bank'} ? ' active' : ''">
+            <a th:href="@{/info-api/bank}">은행</a>
+        </li>
+        <!-- ... 업종별 메뉴 -->
+    </ul>
+</div>
+```
+
+#### 3단계: InfoApiController.java 생성 (사용자가 생성)
 
 ```java
 package com.mydata.mydatatestbed.controller;
@@ -114,90 +143,68 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/support-api")
-public class SupportApiController {
+@RequestMapping("/info-api")
+public class InfoApiController {
 
     @GetMapping
-    public String redirectToPortal() {
-        return "redirect:/support-api/portal";
+    public String redirectToDefault() {
+        return "redirect:/info-api/bank";  // 첫 번째 업종으로 리다이렉트
     }
 
-    @GetMapping("/portal")
-    public String portalApi(Model model) {
-        model.addAttribute("activeGroup", "support");
-        model.addAttribute("currentMenu", "/support-api/portal");
-        model.addAttribute("breadcrumbItems", getBreadcrumbItems("지원 API(종합포털 제공)"));
-        return "support-api/portal-api";
+    @GetMapping("/bank")
+    public String bankApi(Model model) {
+        model.addAttribute("activeGroup", "info");
+        model.addAttribute("currentMenu", "/info-api/bank");
+        model.addAttribute("breadcrumbItems", getBreadcrumbItems("은행"));
+        return "info-api/bank-api";
     }
 
-    @GetMapping("/provider")
-    public String providerApi(Model model) {
-        model.addAttribute("activeGroup", "support");
-        model.addAttribute("currentMenu", "/support-api/provider");
-        model.addAttribute("breadcrumbItems", getBreadcrumbItems("지원 API(마이데이터사업자/정보제공자 제공)"));
-        return "support-api/provider-api";
-    }
+    // ... 업종별 메서드 추가 (스캔 후 확정)
 
     private List<Map<String, String>> getBreadcrumbItems(String current) {
         return List.of(
                 Map.of("name", "홈", "url", "/"),
                 Map.of("name", "API가이드", "url", "/api-guide"),
-                Map.of("name", "마이데이터 지원 API 규격", "url", "/support-api"),
+                Map.of("name", "마이데이터 정보제공 API 규격", "url", "/info-api"),
                 Map.of("name", current, "url", "")
         );
     }
 }
 ```
 
-#### 3단계: sidebar-api-spec.html 수정
-지원 API 하위 메뉴 추가 (현재 주석 처리 상태):
-
-```html
-<!-- 마이데이터 지원 API 규격 -->
-<div class="sidebar-group" th:classappend="${activeGroup == 'support'} ? ' active' : ''">
-    <a th:href="@{/support-api}" class="sidebar-group-title">마이데이터 지원 API 규격</a>
-    <ul class="sidebar-group-menu" th:if="${activeGroup == 'support'}">
-        <li th:classappend="${currentMenu == '/support-api/portal'} ? ' active' : ''">
-            <a th:href="@{/support-api/portal}">지원 API(종합포털 제공)</a>
-        </li>
-        <li th:classappend="${currentMenu == '/support-api/provider'} ? ' active' : ''">
-            <a th:href="@{/support-api/provider}">지원 API(마이데이터사업자/정보제공자 제공)</a>
-        </li>
-    </ul>
-</div>
-```
-
-#### 4단계: SecurityConfig.java 수정
-
+#### 4단계: SecurityConfig.java 확인
+`/info-api/**`는 이미 permitAll 예약되어 있음 (API_SPEC.md 참고):
 ```java
-// 기존
-.requestMatchers("/intro/**", "/api-guide/**", "/cert-api/**").permitAll()
-// 변경
-.requestMatchers("/intro/**", "/api-guide/**", "/cert-api/**", "/support-api/**").permitAll()
+.requestMatchers("/info-api/**").permitAll()
 ```
 
 #### 5단계: HTML 템플릿 생성 (Claude가 생성)
 
 ```
-src/main/resources/templates/support-api/
-├── portal-api.html      # /support-api/portal   (지원 API - 종합포털 제공)
-└── provider-api.html    # /support-api/provider  (지원 API - 마이데이터사업자/정보제공자 제공)
+src/main/resources/templates/info-api/
+├── bank-api.html        # /info-api/bank    (은행)
+├── insurance-api.html   # /info-api/insurance (보험)
+├── invest-api.html      # /info-api/invest   (금융투자)
+├── efin-api.html        # /info-api/efin     (전자금융)
+├── card-api.html        # /info-api/card     (카드)
+└── ... (스캔 후 확정)
 ```
 
 ### 생성할 파일 목록
 
 ```
 src/main/java/.../controller/
-└── SupportApiController.java        # 사용자가 생성 (위 템플릿 참고)
+└── InfoApiController.java          # 사용자가 생성 (위 템플릿 참고)
 
-src/main/resources/templates/support-api/
-├── portal-api.html                  # Claude가 생성
-└── provider-api.html                # Claude가 생성
+src/main/resources/templates/info-api/
+├── bank-api.html                   # Claude가 생성
+├── insurance-api.html              # Claude가 생성
+└── ... (업종별)                     # Claude가 생성
 ```
 
 ### 참고: 기존 패턴
 
-인증 API 규격에서 사용된 HTML 구조를 동일하게 적용:
+인증 API, 지원 API 규격에서 사용된 HTML 구조를 동일하게 적용:
 - `.api-spec-card` 컨테이너
 - `.api-version-badge` 버전 배지
 - `.method-badge` HTTP Method 배지
@@ -216,7 +223,8 @@ src/main/java/com/mydata/mydatatestbed/controller/
 ├── MemberController.java
 ├── SupportController.java
 ├── ApiGuideController.java          # activeGroup="guide"
-└── CertApiController.java          # activeGroup="cert"
+├── CertApiController.java          # activeGroup="cert"
+└── SupportApiController.java       # activeGroup="support"
 
 src/main/resources/templates/
 ├── layout/
@@ -232,6 +240,9 @@ src/main/resources/templates/
 ├── cert-api/
 │   ├── individual-api.html          # /cert-api/individual
 │   └── integrated-api.html          # /cert-api/integrated
+├── support-api/
+│   ├── portal-api.html              # /support-api/portal
+│   └── provider-api.html            # /support-api/provider
 └── ...
 
 src/main/resources/static/css/
@@ -253,11 +264,12 @@ src/main/resources/static/css/
 
 ## 💬 다음 세션 시작하기
 
-1. 원본 사이트에서 **마이데이터 지원 API 규격** 스캔 요청
-2. **SupportApiController.java** 생성 (위 템플릿 참고)
+1. 원본 사이트에서 **마이데이터 정보제공 API 규격** 스캔 요청
+2. 사이드바 하위 메뉴 구조 확인
 3. **sidebar-api-spec.html** 하위 메뉴 추가
-4. **SecurityConfig**에 `/support-api/**` permitAll 추가
-5. `portal-api.html`, `provider-api.html` 생성
+4. **InfoApiController.java** 생성 (위 템플릿 참고)
+5. **SecurityConfig**에 `/info-api/**` permitAll 추가
+6. 업종별 HTML 템플릿 생성
 
 ---
 

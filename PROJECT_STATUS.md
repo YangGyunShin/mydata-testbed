@@ -1,7 +1,7 @@
 # 📊 프로젝트 진행 상황
 
-> **마지막 업데이트**: 2026-02-02  
-> **현재 Phase**: Phase 4-1 진행 중 (마이데이터 인증 API 규격 완료, 마이데이터 지원 API 규격 예정)
+> **마지막 업데이트**: 2026-02-03  
+> **현재 Phase**: Phase 4-1 진행 중 (마이데이터 지원 API 규격 완료, 마이데이터 정보제공 API 규격 예정)
 
 ---
 
@@ -11,7 +11,7 @@
 Phase 1: 기본 구조      [██████████] 100% ✅
 Phase 2: 회원 기능      [██████████] 100% ✅
 Phase 3: 게시판 기능    [██████████] 100% ✅
-Phase 4: 핵심 기능      [████░░░░░░]  40% 🔄
+Phase 4: 핵심 기능      [██████░░░░]  55% 🔄
 Phase 5: 완성도         [░░░░░░░░░░]   0% ⏳
 ```
 
@@ -65,7 +65,7 @@ Phase 5: 완성도         [░░░░░░░░░░]   0% ⏳
 | **인증규격** | `auth-spec.html` | `/api-guide/auth` |
 | **참여자별 API 처리 절차** | `process-spec.html` | `/api-guide/process` |
 
-### Phase 4-1: 마이데이터 인증 API 규격 ✅ NEW
+### Phase 4-1: 마이데이터 인증 API 규격 ✅
 
 | 항목 | 파일 | URL |
 |------|------|-----|
@@ -86,31 +86,38 @@ Phase 5: 완성도         [░░░░░░░░░░]   0% ⏳
 - 통합인증-102: 전자서명 요청 (v0, v1)
 - 통합인증-103: 전자서명 결과 조회 (v0, v1)
 
-### Phase 4-1: 아코디언 사이드바 통합 ✅ NEW
+### Phase 4-1: 마이데이터 지원 API 규격 ✅ NEW
+
+| 항목 | 파일 | URL |
+|------|------|-----|
+| **Controller** | `SupportApiController.java` | `/support-api/**` |
+| **지원 API(종합포털 제공)** | `portal-api.html` | `/support-api/portal` |
+| **지원 API(사업자/정보제공자 제공)** | `provider-api.html` | `/support-api/provider` |
+
+**종합포털 제공 API 스펙 (14개):**
+- 지원-001: 접근토큰 발급 (v0)
+- 지원-002: 기관정보 조회 (v1, v2)
+- 지원-003: 서비스정보 조회 (v1, v2)
+- 지원-004: 마이데이터사업자/정보수신자 통계자료 전송 (v1, v2)
+- 지원-005: 정보제공자 통계자료 전송 (v1, v2)
+- 지원-006: 통합인증기관용 기관정보 조회 (v1, v2)
+- 지원-105: 개인(신용)정보 제3자 제공동의 내역 요청 (v2)
+- 지원-106: 개인(신용)정보 제3자 제공동의에 따른 제공 내역 요청 (v2)
+- 지원-107: 개인(신용)정보 제3자 제공 동의 내역 철회 요청 (v2)
+
+**마이데이터사업자/정보제공자 제공 API 스펙 (4개):**
+- 지원-101: 접근토큰 발급 (v0)
+- 지원-102: 마이데이터사업자 상태조회 (v2)
+- 지원-103: 전송요구 내역 조회 (v2)
+- 지원-104: 통계자료 재전송 요청 (v2)
+
+### Phase 4-1: 아코디언 사이드바 통합 ✅
 
 | 항목 | 설명 |
 |------|------|
 | **sidebar-api-spec.html** | 4개 그룹 통합 아코디언 사이드바 (guide/cert/support/info) |
 | **activeGroup 방식** | 컨트롤러에서 `activeGroup` 파라미터로 활성 그룹 지정 |
 | **CSS 개선** | 세부항목 배경색(`#eef3f9`), 상위항목 볼드, 세부항목 글자 축소 |
-
-**아코디언 사이드바 구조:**
-```
-┌─────────────────────────────────┐
-│ API가이드              (guide)   │ ← activeGroup='guide'이면 펼침
-│   ├ 데이터 표준 API 기본규격     │
-│   ├ 데이터 표준 API 인증규격     │
-│   └ 마이데이터 참여자별 API 처리 │
-├─────────────────────────────────┤
-│ 마이데이터 인증 API 규격 (cert)  │ ← activeGroup='cert'이면 펼침
-│   ├ 개별인증 API                 │
-│   └ 통합인증 API                 │
-├─────────────────────────────────┤
-│ 마이데이터 지원 API 규격(support)│ ⬜ 다음 작업
-├─────────────────────────────────┤
-│ 마이데이터 정보제공 API규격(info)│ ⬜ 추후
-└─────────────────────────────────┘
-```
 
 ---
 
@@ -120,8 +127,7 @@ Phase 5: 완성도         [░░░░░░░░░░]   0% ⏳
 
 | 항목 | 컨트롤러 | URL 패턴 | activeGroup | 상태 |
 |------|---------|----------|-------------|------|
-| 마이데이터 지원 API 규격 | `SupportApiController` | `/support-api/**` | `support` | ⬜ **다음 작업** |
-| 마이데이터 정보제공 API 규격 | `InfoApiController` | `/info-api/**` | `info` | ⬜ 추후 |
+| 마이데이터 정보제공 API 규격 | `InfoApiController` | `/info-api/**` | `info` | ⬜ **다음 작업** |
 
 ### Phase 4-2: 테스트베드 기능 ⬜
 
@@ -164,7 +170,8 @@ src/main/java/com/mydata/mydatatestbed/
 │   ├── MemberController.java
 │   ├── SupportController.java
 │   ├── ApiGuideController.java          # ✅ Phase 4-1 (activeGroup="guide")
-│   └── CertApiController.java          # ✅ Phase 4-1 (activeGroup="cert")
+│   ├── CertApiController.java          # ✅ Phase 4-1 (activeGroup="cert")
+│   └── SupportApiController.java       # ✅ Phase 4-1 (activeGroup="support") NEW
 │
 ├── entity/
 │   ├── BaseTimeEntity.java
@@ -255,9 +262,12 @@ src/main/resources/
 │   │   ├── basic-spec.html             # 데이터 표준 API 기본규격
 │   │   ├── auth-spec.html              # 데이터 표준 API 인증규격
 │   │   └── process-spec.html           # 마이데이터 참여자별 API 처리 절차
-│   ├── cert-api/                        # ✅ Phase 4-1 NEW
+│   ├── cert-api/                        # ✅ Phase 4-1
 │   │   ├── individual-api.html         # 개별인증 API (8개 스펙)
 │   │   └── integrated-api.html         # 통합인증 API (9개 스펙)
+│   ├── support-api/                     # ✅ Phase 4-1 NEW
+│   │   ├── portal-api.html             # 지원 API - 종합포털 제공 (14개 스펙)
+│   │   └── provider-api.html           # 지원 API - 사업자/정보제공자 제공 (4개 스펙)
 │   └── error/
 └── static/
     ├── css/
@@ -299,6 +309,9 @@ src/main/resources/
 | `/cert-api` | GET | → `/cert-api/individual` 리다이렉트 ✅ |
 | `/cert-api/individual` | GET | 개별인증 API ✅ |
 | `/cert-api/integrated` | GET | 통합인증 API ✅ |
+| `/support-api` | GET | → `/support-api/portal` 리다이렉트 ✅ NEW |
+| `/support-api/portal` | GET | 지원 API(종합포털 제공) ✅ NEW |
+| `/support-api/provider` | GET | 지원 API(사업자/정보제공자 제공) ✅ NEW |
 
 ### 인증 필요 URL
 
