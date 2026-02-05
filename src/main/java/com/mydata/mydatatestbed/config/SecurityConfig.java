@@ -32,6 +32,9 @@ public class SecurityConfig {
                         
                         // 소개, API 가이드 페이지 허용
                         .requestMatchers("/intro/**", "/api-guide/**", "/cert-api/**", "/support-api/**").permitAll()
+                        
+                        // 정보제공 API 규격 허용
+                        .requestMatchers("/info-api/**").permitAll()
 
                         // 고객지원 - 인증 필요한 URL (구체적인 패턴 먼저!)
                         .requestMatchers("/support/inquiry/**").authenticated()

@@ -53,6 +53,44 @@
     <!-- 마이데이터 정보제공 API 규격 -->
     <div class="sidebar-group" th:classappend="${activeGroup == 'info'} ? ' active' : ''">
         <a th:href="@{/info-api}" class="sidebar-group-title">마이데이터 정보제공 API 규격</a>
+        <ul class="sidebar-group-menu" th:if="${activeGroup == 'info'}">
+            <li th:classappend="${currentMenu == '/info-api/bank'} ? ' active' : ''">
+                <a th:href="@{/info-api/bank}">은행 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/card'} ? ' active' : ''">
+                <a th:href="@{/info-api/card}">카드 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/insurance'} ? ' active' : ''">
+                <a th:href="@{/info-api/insurance}">보험 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/invest'} ? ' active' : ''">
+                <a th:href="@{/info-api/invest}">금융투자 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/efin'} ? ' active' : ''">
+                <a th:href="@{/info-api/efin}">전자금융 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/installment'} ? ' active' : ''">
+                <a th:href="@{/info-api/installment}">할부금융 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/guarantee'} ? ' active' : ''">
+                <a th:href="@{/info-api/guarantee}">보증보험 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/telecom'} ? ' active' : ''">
+                <a th:href="@{/info-api/telecom}">통신 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/p2p'} ? ' active' : ''">
+                <a th:href="@{/info-api/p2p}">P2P 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/bond'} ? ' active' : ''">
+                <a th:href="@{/info-api/bond}">인수채권 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/loan'} ? ' active' : ''">
+                <a th:href="@{/info-api/loan}">대부 업권 정보제공 API 규격</a>
+            </li>
+            <li th:classappend="${currentMenu == '/info-api/kinfa'} ? ' active' : ''">
+                <a th:href="@{/info-api/kinfa}">서민금융진흥원 API 규격</a>
+            </li>
+        </ul>
     </div>
 
 </aside>
