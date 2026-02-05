@@ -1,7 +1,7 @@
 # 📋 다음 세션 작업 가이드
 
-> **마지막 업데이트**: 2026-02-03  
-> **다음 작업**: Phase 4-1 계속 - 마이데이터 정보제공 API 규격
+> **마지막 업데이트**: 2026-02-05  
+> **다음 작업**: Phase 4-4 계속 - 마이데이터 정보제공 API 규격 (나머지 업권)
 
 ---
 
@@ -23,9 +23,10 @@
 | Phase 2: 회원 기능 | ✅ | 4단계 회원가입, 이메일 인증 |
 | Phase 3: 게시판 기능 | ✅ | 공지사항, FAQ, 문의, 자료실, 자유게시판 |
 | Phase 4-1: 데이터 표준 API | ✅ | 기본규격, 인증규격, 참여자별 처리절차 |
-| Phase 4-1: 마이데이터 인증 API 규격 | ✅ | 개별인증 API (4개), 통합인증 API (9개) |
-| Phase 4-1: 마이데이터 지원 API 규격 | ✅ | 종합포털 제공 (14개), 사업자/정보제공자 제공 (4개) |
-| Phase 4-1: 마이데이터 정보제공 API 규격 | ⬜ | **다음 작업** |
+| Phase 4-2: 마이데이터 인증 API 규격 | ✅ | 개별인증 API (4개), 통합인증 API (9개) |
+| Phase 4-3: 마이데이터 지원 API 규격 | ✅ | 종합포털 제공 (14개), 사업자/정보제공자 제공 (4개) |
+| Phase 4-4: 마이데이터 정보제공 API 규격 - 은행 | ✅ | 은행 업권 (31개 API) |
+| Phase 4-4: 마이데이터 정보제공 API 규격 - 나머지 | ⬜ | **다음 작업** (11개 업권) |
 
 ---
 
@@ -63,155 +64,83 @@
 
 ---
 
-## 🎯 다음 작업: 마이데이터 정보제공 API 규격
+## 🎯 다음 작업: 마이데이터 정보제공 API 규격 (나머지 11개 업권)
 
-### 핵심 구조
+### 아코디언 사이드바 구조 (이미 구현 완료)
 
-원본 사이트의 사이드바 하위 메뉴 구조:
+`sidebar-api-spec.html`에 12개 업권 모두 메뉴 등록 완료:
 ```
-마이데이터 정보제공 API 규격 (activeGroup='info')
-├── 은행
-├── 보험
-├── 금융투자
-├── 전자금융
-├── 카드
-├── 통신
-├── 보증보험
-├── P2P
-├── 공공
-└── ... (스캔 후 확인 필요)
-```
-
-> ⚠️ **원본 사이트 스캔 필요**: 하위 메뉴 구성과 각 업종별 API 스펙 내용은 원본 사이트에서 확인해야 합니다.
-
-### 아코디언 사이드바 구조 (이미 구현됨)
-
-모든 API 규격 페이지는 **동일한 아코디언 사이드바**(`sidebar-api-spec.html`)를 공유합니다:
-```
-API가이드                          (activeGroup='guide')  ✅ 완료
-├── 데이터 표준 API 기본규격
-├── 데이터 표준 API 인증규격
-└── 마이데이터 참여자별 API 처리 절차
-
-마이데이터 인증 API 규격            (activeGroup='cert')   ✅ 완료
-├── 개별인증 API
-└── 통합인증 API
-
-마이데이터 지원 API 규격            (activeGroup='support') ✅ 완료
-├── 지원 API(종합포털 제공)
-└── 지원 API(마이데이터사업자/정보제공자 제공)
-
-마이데이터 정보제공 API 규격        (activeGroup='info')   ⬜ 다음 작업
-└── (스캔 필요)
+마이데이터 정보제공 API 규격        (activeGroup='info')
+├── 은행 업권 정보제공 API 규격      ✅ 완료 (/info-api/bank)
+├── 카드 업권 정보제공 API 규격      ⬜ 다음 (/info-api/card)
+├── 보험 업권 정보제공 API 규격      ⬜ (/info-api/insurance)
+├── 금융투자 업권 정보제공 API 규격   ⬜ (/info-api/invest)
+├── 전자금융 업권 정보제공 API 규격   ⬜ (/info-api/efin)
+├── 할부금융 업권 정보제공 API 규격   ⬜ (/info-api/installment)
+├── 보증보험 업권 정보제공 API 규격   ⬜ (/info-api/guarantee)
+├── 통신 업권 정보제공 API 규격      ⬜ (/info-api/telecom)
+├── P2P 업권 정보제공 API 규격       ⬜ (/info-api/p2p)
+├── 인수채권 업권 정보제공 API 규격   ⬜ (/info-api/bond)
+├── 대부 업권 정보제공 API 규격      ⬜ (/info-api/loan)
+└── 서민금융진흥원 API 규격          ⬜ (/info-api/kinfa)
 ```
 
-### 작업 절차
+### 원본 사이트 업권별 URL 매핑
 
-#### 1단계: 원본 사이트 스캔
-- 원본 URL에서 "마이데이터 정보제공 API 규격" 섹션 내용 스캔
-- 사이드바 하위 메뉴 구조 파악 (업종별 분류)
-- 각 하위 페이지의 API 스펙 데이터 추출
+| 업권 | 원본 URL | 프로젝트 URL |
+|------|---------|-------------|
+| 은행 | `/mdtb/apg/mac/bas/FSAG0404?id=1` | `/info-api/bank` ✅ |
+| 카드 | `/mdtb/apg/mac/bas/FSAG0406?id=2` | `/info-api/card` |
+| 보험 | `/mdtb/apg/mac/bas/FSAG0403?id=3` | `/info-api/insurance` |
+| 금융투자 | `/mdtb/apg/mac/bas/FSAG0402?id=4` | `/info-api/invest` |
+| 전자금융 | `/mdtb/apg/mac/bas/FSAG0405?id=5` | `/info-api/efin` |
+| 할부금융 | `/mdtb/apg/mac/bas/FSAG0407?id=6` | `/info-api/installment` |
+| 보증보험 | `/mdtb/apg/mac/bas/FSAG0408?id=10` | `/info-api/guarantee` |
+| 통신 | `/mdtb/apg/mac/bas/FSAG0409?id=11` | `/info-api/telecom` |
+| P2P | `/mdtb/apg/mac/bas/FSAG0410?id=13` | `/info-api/p2p` |
+| 인수채권 | `/mdtb/apg/mac/bas/FSAG0411?id=14` | `/info-api/bond` |
+| 대부 | `/mdtb/apg/mac/bas/FSAG0412?id=15` | `/info-api/loan` |
+| 서민금융진흥원 | (스캔 필요) | `/info-api/kinfa` |
 
-#### 2단계: sidebar-api-spec.html 수정
-정보제공 API 하위 메뉴 추가 (현재 주석 처리 상태):
+### 업권 추가 작업 절차 (반복)
 
-```html
-<!-- 마이데이터 정보제공 API 규격 -->
-<div class="sidebar-group" th:classappend="${activeGroup == 'info'} ? ' active' : ''">
-    <a th:href="@{/info-api}" class="sidebar-group-title">마이데이터 정보제공 API 규격</a>
-    <ul class="sidebar-group-menu" th:if="${activeGroup == 'info'}">
-        <!-- 스캔 후 하위 메뉴 추가 -->
-        <li th:classappend="${currentMenu == '/info-api/bank'} ? ' active' : ''">
-            <a th:href="@{/info-api/bank}">은행</a>
-        </li>
-        <!-- ... 업종별 메뉴 -->
-    </ul>
-</div>
-```
+각 업권별로 아래 절차를 반복:
 
-#### 3단계: InfoApiController.java 생성 (사용자가 생성)
+1. **원본 사이트 스캔**: 해당 업권 URL에서 API 스펙 데이터 추출 (JavaScript로 JSON + HTML 생성)
+2. **HTML 템플릿 다운로드**: 브라우저에서 생성된 `{업권}-api.html` 다운로드
+3. **파일 배치**: `templates/info-api/` 에 복사
+4. **InfoApiController.java**: 해당 업권 메서드 주석 해제
+
+### InfoApiController.java 업권 추가 패턴
 
 ```java
-package com.mydata.mydatatestbed.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.List;
-import java.util.Map;
-
-@Controller
-@RequestMapping("/info-api")
-public class InfoApiController {
-
-    @GetMapping
-    public String redirectToDefault() {
-        return "redirect:/info-api/bank";  // 첫 번째 업종으로 리다이렉트
-    }
-
-    @GetMapping("/bank")
-    public String bankApi(Model model) {
-        model.addAttribute("activeGroup", "info");
-        model.addAttribute("currentMenu", "/info-api/bank");
-        model.addAttribute("breadcrumbItems", getBreadcrumbItems("은행"));
-        return "info-api/bank-api";
-    }
-
-    // ... 업종별 메서드 추가 (스캔 후 확정)
-
-    private List<Map<String, String>> getBreadcrumbItems(String current) {
-        return List.of(
-                Map.of("name", "홈", "url", "/"),
-                Map.of("name", "API가이드", "url", "/api-guide"),
-                Map.of("name", "마이데이터 정보제공 API 규격", "url", "/info-api"),
-                Map.of("name", current, "url", "")
-        );
-    }
+// 주석 해제하여 업권 추가
+@GetMapping("/card")
+public String cardApi(Model model) {
+    model.addAttribute("activeGroup", "info");
+    model.addAttribute("currentMenu", "/info-api/card");
+    model.addAttribute("breadcrumbItems", getBreadcrumbItems("카드 업권 정보제공 API 규격"));
+    return "info-api/card-api";
 }
 ```
 
-#### 4단계: SecurityConfig.java 확인
-`/info-api/**`는 이미 permitAll 예약되어 있음 (API_SPEC.md 참고):
-```java
-.requestMatchers("/info-api/**").permitAll()
-```
-
-#### 5단계: HTML 템플릿 생성 (Claude가 생성)
+### 생성할 파일 목록 (남은 업권)
 
 ```
 src/main/resources/templates/info-api/
-├── bank-api.html        # /info-api/bank    (은행)
-├── insurance-api.html   # /info-api/insurance (보험)
-├── invest-api.html      # /info-api/invest   (금융투자)
-├── efin-api.html        # /info-api/efin     (전자금융)
-├── card-api.html        # /info-api/card     (카드)
-└── ... (스캔 후 확정)
+├── bank-api.html           # ✅ 완료 (31개 API, ~197KB)
+├── card-api.html           # ⬜ Claude가 생성
+├── insurance-api.html      # ⬜ Claude가 생성
+├── invest-api.html         # ⬜ Claude가 생성
+├── efin-api.html           # ⬜ Claude가 생성
+├── installment-api.html    # ⬜ Claude가 생성
+├── guarantee-api.html      # ⬜ Claude가 생성
+├── telecom-api.html        # ⬜ Claude가 생성
+├── p2p-api.html            # ⬜ Claude가 생성
+├── bond-api.html           # ⬜ Claude가 생성
+├── loan-api.html           # ⬜ Claude가 생성
+└── kinfa-api.html          # ⬜ Claude가 생성
 ```
-
-### 생성할 파일 목록
-
-```
-src/main/java/.../controller/
-└── InfoApiController.java          # 사용자가 생성 (위 템플릿 참고)
-
-src/main/resources/templates/info-api/
-├── bank-api.html                   # Claude가 생성
-├── insurance-api.html              # Claude가 생성
-└── ... (업종별)                     # Claude가 생성
-```
-
-### 참고: 기존 패턴
-
-인증 API, 지원 API 규격에서 사용된 HTML 구조를 동일하게 적용:
-- `.api-spec-card` 컨테이너
-- `.api-version-badge` 버전 배지
-- `.method-badge` HTTP Method 배지
-- `.api-toc` Table of Contents
-- `.api-msg-table` 메시지 명세 테이블
-
-CSS는 이미 `api-guide.css`에 모두 정의되어 있으므로 추가 CSS 불필요.
 
 ---
 
@@ -224,7 +153,8 @@ src/main/java/com/mydata/mydatatestbed/controller/
 ├── SupportController.java
 ├── ApiGuideController.java          # activeGroup="guide"
 ├── CertApiController.java          # activeGroup="cert"
-└── SupportApiController.java       # activeGroup="support"
+├── SupportApiController.java       # activeGroup="support"
+└── InfoApiController.java          # ✅ NEW activeGroup="info"
 
 src/main/resources/templates/
 ├── layout/
@@ -232,7 +162,7 @@ src/main/resources/templates/
 │   ├── header.html
 │   ├── footer.html
 │   ├── sidebar.html                 # 일반 사이드바 (고객지원용)
-│   └── sidebar-api-spec.html        # 아코디언 사이드바 (API 규격용)
+│   └── sidebar-api-spec.html        # 아코디언 사이드바 (12개 업권 메뉴 포함)
 ├── api-guide/
 │   ├── basic-spec.html              # /api-guide/base
 │   ├── auth-spec.html               # /api-guide/auth
@@ -243,6 +173,8 @@ src/main/resources/templates/
 ├── support-api/
 │   ├── portal-api.html              # /support-api/portal
 │   └── provider-api.html            # /support-api/provider
+├── info-api/                        # ✅ NEW
+│   └── bank-api.html               # /info-api/bank (31개 API 스펙)
 └── ...
 
 src/main/resources/static/css/
@@ -259,17 +191,15 @@ src/main/resources/static/css/
 | API 가이드 사이드바에 세부항목 미표시 | 아코디언 사이드바에 API가이드 그룹 누락 | `sidebar-api-spec.html`에 guide 그룹 추가 |
 | 사이드바 템플릿-컨트롤러 불일치 | HTML은 `activeGroup` 기대, 컨트롤러는 `sidebarMenus` 전달 | 컨트롤러를 `activeGroup` 방식으로 통일 |
 | 상위/세부 항목 구분 어려움 | 동일한 배경색, 글자 크기 | 세부항목 배경색/보더 추가, 글자 크기 차별화 |
+| 원본 사이트 데이터 추출 시 콘텐츠 차단 | 브라우저 보안 정책으로 대용량 텍스트 반환 차단 | JSON/HTML 파일로 다운로드 후 수동 복사 방식 채택 |
 
 ---
 
 ## 💬 다음 세션 시작하기
 
-1. 원본 사이트에서 **마이데이터 정보제공 API 규격** 스캔 요청
-2. 사이드바 하위 메뉴 구조 확인
-3. **sidebar-api-spec.html** 하위 메뉴 추가
-4. **InfoApiController.java** 생성 (위 템플릿 참고)
-5. **SecurityConfig**에 `/info-api/**` permitAll 추가
-6. 업종별 HTML 템플릿 생성
+1. **카드 업권부터 순차적으로 진행** (원본 사이트 스캔 → HTML 생성 → 다운로드 → 배치)
+2. 각 업권 완료 시 **InfoApiController.java** 해당 메서드 주석 해제
+3. 모든 업권 완료 후 **문서 업데이트** (README, PROJECT_STATUS, API_SPEC)
 
 ---
 
